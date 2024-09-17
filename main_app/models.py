@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 # Create your models here.
 class Media(models.Model): 
@@ -21,7 +22,10 @@ class Media(models.Model):
     title = models.CharField(max_length=255) 
     genre = models.CharField(max_length=100, blank=True) # Filled by API
     description = models.TextField(blank=True) # Filled by API 
-    rating = models.IntegerlField(max_digits=3, decimal_places=1) # User's rating 
+    rating = models.IntegerField(validators=[
+            MaxValueValidator(5),
+            MinValueValidator(0)
+        ]) # User's rating 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='plan_to_watch') 
     difficulty = models.CharField(max_length=50) # Could be Easy, Medium, Hard, etc. 
     image_url = models.URLField(blank=True) # Filled by API
