@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}MediaHaven{% endblock %}</title>
+    <!-- <link rel="stylesheet" href="{% static 'css/styles.css' %}"> -->
+  </head>
+  <body>
+    <div class="sidebar">
+      <img
+        src="{% static 'images/media_haven_logo.png' %}"
+        alt="Add a Movie Icon"
+      />
+
+      <p>Username</p>
+      <button class="logout">Log Out</button>
+
+      <!-- Movies -->
+      <a href="{% url 'media_filtered' 'movie' %}">
+        <img src="{% static 'images/movie_icon.png' %}" alt="All Movies Icon" />
+        All Movies
+      </a>
+      <a href="{% url 'add_media_by_type' 'movie' %}">
+        <img
+          src="{% static 'images/movie_icon.png' %}"
+          alt="Add a Movie Icon"
+        />
+        Add a Movie
+      </a>
+
+      <!-- TV Shows -->
+      <a href="{% url 'media_filtered' 'tv_show' %}">
+        <img src="{% static 'images/tv_icon.png' %}" alt="All TV Shows Icon" />
+        All TV Shows
+      </a>
+      <a href="{% url 'add_media_by_type' 'tv_show' %}">
+        <img src="{% static 'images/tv_icon.png' %}" alt="Add a TV Show Icon" />
+        Add a TV Show
+      </a>
+      <!-- Anime -->
+      <a href="{% url 'media_filtered' 'anime' %}">
+        <img src="{% static 'images/anime_icon.png' %}" alt="All Anime Icon" />
+        All Anime
+      </a>
+      <a href="{% url 'add_media_by_type' 'anime' %}">
+        <img src="{% static 'images/anime_icon.png' %}" alt="Add Anime Icon" />
+        Add an Anime
+      </a>
+
+      <!-- Video Games -->
+      <a href="{% url 'media_filtered' 'game' %}">
+        <img
+          src="{% static 'images/videogame_icon.png' %}"
+          alt="All Video Games Icon"
+        />
+        All Video Games
+      </a>
+      <a href="{% url 'add_media_by_type' 'game' %}">
+        <img
+          src="{% static 'images/videogame_icon.png' %}"
+          alt="Add Video Game Icon"
+        />
+        Add a Video Game
+      </a>
+    </div>
+
+    <div class="content">{% block content %} {% endblock %}</div>
+  </body>
+</html>
