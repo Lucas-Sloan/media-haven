@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Movies{% endblock %}
+
+{% block content %}
+    <div class="media-tabs">
+        <a href="{% url 'media_filtered' 'movie' %}" class="tab {% if not current_status %}active{% endif %}">All Movies</a>
+        <a href="{% url 'media_filtered_status' 'movie' 'in_progress' %}" class="tab {% if current_status == 'in_progress' %}active{% endif %}">Currently Watching</a>
+        <a href="{% url 'media_filtered_status' 'movie' 'finished' %}" class="tab {% if current_status == 'finished' %}active{% endif %}">Watched</a>
+        <a href="{% url 'media_filtered_status' 'movie' 'planning' %}" class="tab {% if current_status == 'planning' %}active{% endif %}">Plan to Watch</a>
+        <a href="{% url 'media_filtered_status' 'movie' 'dropped' %}" class="tab {% if current_status == 'dropped' %}active{% endif %}">Dropped</a>
+    </div>
+
+    <table class="media-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Image</th>
+                <th>Title</th>
+                <th>Rating</th>
+                <th>Genre</th>
+                <th>Status</th>
+                <th>Edit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for media in media_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><img src="{{ media.image_url }}" alt="{{ media.title }} cover" class="table-image"></td>
+                <td>{{ media.title }}</td>
+                <td>{{ media.rating }}</td>
+                <td>{{ media.genre }}</td>
+                <td>{{ media.get_status_display }}</td>
+                <td><a href="{% url 'edit_media' media.id %}" class="edit-link">Edit</a></td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No movies found in this category.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %} 
