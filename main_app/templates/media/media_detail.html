@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ media.title }}{% endblock %}
+
+{% block content %}
+    <div class="media-details-page">
+        <h1>{{ media.title }}</h1>
+
+        <div class="media-details-container">
+            <div class="media-image">
+                <img src="{{ media.image_url }}" alt="{{ media.title }} cover image">
+            </div>
+            <div class="media-info">
+                <p><strong>Type:</strong> 
+                    {% if media.media_type == 'movie' %}Movie
+                    {% elif media.media_type == 'tv_show' %}TV Show
+                    {% elif media.media_type == 'anime' %}Anime
+                    {% elif media.media_type == 'game' %}Video Game
+                    {% endif %}
+                </p>
+                <p><strong>Description:</strong> {{ media.description }}</p>
+                <p><strong>Rating:</strong> {{ media.rating }} / 5</p>
+                <p><strong>Status:</strong> {{ media.get_status_display }}</p>
+                <p><strong>Genre:</strong> {{ media.genre }}</p>
+                <p><strong>Notes (optional):</strong> {{ media.notes|default:"No notes available" }}</p>
+                
+                <p><strong>Favorite:</strong> 
+                    {% if media.is_favorite %}
+                        <span>&#x2764;</span> <!-- Filled heart for favorite -->
+                    {% else %}
+                        <span>&#x2661;</span> <!-- Empty heart for non-favorite -->
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        
+        <div class="reviews-section">
+            <h2>Reviews</h2>
+            <div class="reviews-container">
+                {% for review in reviews %}
+                <div class="review-card">
+                    <p><strong>Rating:</strong> {{ review.rating }} / 5</p>
+                    <h3>{{ review.title }}</h3>
+                    <p>{{ review.text }}</p>
+                </div>
+                {% empty %}
+                <p>No reviews available for this media.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+ 
