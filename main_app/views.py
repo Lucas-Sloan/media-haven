@@ -19,17 +19,17 @@ def dashboard(request):
 # Media Index (List all media)
 def media_index(request):
     media_list = Media.objects.all()  # Fetch all media
-    return render(request, 'media_index.html', {'media_list': media_list})
+    return render(request, 'media/media_index.html', {'media_list': media_list})
 
 # Media Filtered by Type (Movies, TV Shows, Anime, Video Games)
 def media_filtered(request, media_type):
     media_list = Media.objects.filter(media_type=media_type)
-    return render(request, 'media_filtered.html', {'media_list': media_list, 'media_type': media_type})
+    return render(request, 'media/media_index.html', {'media_list': media_list, 'media_type': media_type})
 
 # Media Filtered by Type and Status (e.g., Watching, Watched, etc.)
 def media_filtered_status(request, media_type, status):
     media_list = Media.objects.filter(media_type=media_type, status=status)
-    return render(request, 'media_filtered_status.html', {
+    return render(request, 'media/media_index.html', {
         'media_list': media_list,
         'media_type': media_type,
         'status': status,

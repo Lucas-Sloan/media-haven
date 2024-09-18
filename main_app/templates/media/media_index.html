@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Movies{% endblock %}
+{% block title %}{{ media_type|title }}{% endblock %}
 
 {% block content %}
     <div class="media-tabs">
-        <a href="{% url 'media_filtered' 'movie' %}" class="tab {% if not current_status %}active{% endif %}">All Movies</a>
-        <a href="{% url 'media_filtered_status' 'movie' 'in_progress' %}" class="tab {% if current_status == 'in_progress' %}active{% endif %}">Currently Watching</a>
-        <a href="{% url 'media_filtered_status' 'movie' 'finished' %}" class="tab {% if current_status == 'finished' %}active{% endif %}">Watched</a>
-        <a href="{% url 'media_filtered_status' 'movie' 'planning' %}" class="tab {% if current_status == 'planning' %}active{% endif %}">Plan to Watch</a>
-        <a href="{% url 'media_filtered_status' 'movie' 'dropped' %}" class="tab {% if current_status == 'dropped' %}active{% endif %}">Dropped</a>
+        <a href="{% url 'media_filtered' media_type %}" class="tab {% if not current_status %}active{% endif %}">All {{ media_type|title }}</a>
+        <a href="{% url 'media_filtered_status' media_type 'in_progress' %}" class="tab {% if current_status == 'in_progress' %}active{% endif %}">Currently Watching</a>
+        <a href="{% url 'media_filtered_status' media_type 'finished' %}" class="tab {% if current_status == 'finished' %}active{% endif %}">Watched</a>
+        <a href="{% url 'media_filtered_status' media_type 'planning' %}" class="tab {% if current_status == 'planning' %}active{% endif %}">Plan to Watch</a>
+        <a href="{% url 'media_filtered_status' media_type 'dropped' %}" class="tab {% if current_status == 'dropped' %}active{% endif %}">Dropped</a>
     </div>
 
     <table class="media-table">
@@ -36,7 +36,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7">No movies found in this category.</td>
+                <td colspan="7">No {{ media_type|title }} found in this category.</td>
             </tr>
             {% endfor %}
         </tbody>
