@@ -46,7 +46,7 @@ body {
     border: none;
     padding: 10px;
     cursor: pointer;
-    margin-top: auto;
+    margin-top: 20px;
 }
 
 .sidebar button.logout:hover {
@@ -56,4 +56,95 @@ body {
 .content {
     margin-left: 270px;
     padding: 20px;
+}
+
+.media-card {
+    background-color: #1f1f1f;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.media-card img {
+    max-width: 100px;
+    border-radius: 5px;
+}
+
+.media-card h3 {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+.media-card p {
+    font-size: 0.9em;
+    color: #b0b0b0;
+}
+
+/* Tabs */
+.media-tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+    background-color: #333;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.media-tabs a {
+    color: #e0e0e0;
+    padding: 10px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.media-tabs a:hover {
+    background-color: #424242;
+}
+
+.media-tabs a.active {
+    background-color: #e53935;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table th, table td {
+    padding: 10px;
+    border: 1px solid #444;
+    text-align: left;
+}
+
+table th {
+    background-color: #333;
+    color: #ffffff;
+}
+
+table td {
+    background-color: #1f1f1f;
+    color: #e0e0e0;
+}
+
+input, select, textarea, button {
+    background-color: #333;
+    color: #e0e0e0;
+    border: 1px solid #444;
+    padding: 8px;
+    border-radius: 4px;
+    width: 100%;
+}
+
+button.submit-btn {
+    background-color: #e53935;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+button.submit-btn:hover {
+    background-color: #b71c1c;
 }

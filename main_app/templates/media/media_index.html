@@ -5,10 +5,10 @@
 {% block content %}
     <div class="media-tabs">
         <a href="{% url 'media_filtered' media_type %}" class="tab {% if not current_status %}active{% endif %}">All {{ media_type|title }}</a>
-        <a href="{% url 'media_filtered_status' media_type 'in_progress' %}" class="tab {% if current_status == 'in_progress' %}active{% endif %}">Currently Watching</a>
-        <a href="{% url 'media_filtered_status' media_type 'finished' %}" class="tab {% if current_status == 'finished' %}active{% endif %}">Watched</a>
-        <a href="{% url 'media_filtered_status' media_type 'planning' %}" class="tab {% if current_status == 'planning' %}active{% endif %}">Plan to Watch</a>
-        <a href="{% url 'media_filtered_status' media_type 'dropped' %}" class="tab {% if current_status == 'dropped' %}active{% endif %}">Dropped</a>
+        <a href="{% url 'media_filtered_status' media_type 'ip' %}" class="tab {% if current_status == 'in_progress' %}active{% endif %}">In Progress</a>
+        <a href="{% url 'media_filtered_status' media_type 'f' %}" class="tab {% if current_status == 'finished' %}active{% endif %}">Finished</a>
+        <a href="{% url 'media_filtered_status' media_type 'p' %}" class="tab {% if current_status == 'planning' %}active{% endif %}">Planning</a>
+        <a href="{% url 'media_filtered_status' media_type 'dr' %}" class="tab {% if current_status == 'dropped' %}active{% endif %}">Dropped</a>
     </div>
 
     <table class="media-table">
