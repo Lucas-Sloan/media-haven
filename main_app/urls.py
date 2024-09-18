@@ -5,6 +5,8 @@ urlpatterns = [
     
     path('', views.home, name='home'),
 
+    path('dashboard/', views.dashboard, name='dashboard'),
+
     path('media/', views.media_index, name='media_index'),
 
     path('media/<str:media_type>/', views.media_filtered, name='media_filtered'),
