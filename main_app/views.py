@@ -2,12 +2,16 @@ from django.shortcuts import render, get_object_or_404, redirect
 from .models import Media, Review
 from .forms import MediaForm, ReviewForm
 
-# Home / Dashboard View
+# Landing page view
 def home(request):
-    # Display recently added media and favorites in the home page
+    return render(request, 'home.html')
+
+# Dashboard view
+def dashboard(request):
+    # Display recently added media and favorites in the dashboard
     recently_added = Media.objects.order_by('-created_at')[:10]
     favorites = Media.objects.filter(is_favorite=True)
-    return render(request, 'home.html', {
+    return render(request, 'dashboard.html', {
         'recently_added': recently_added,
         'favorites': favorites,
     })
