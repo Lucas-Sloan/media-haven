@@ -65,7 +65,7 @@ def edit_media(request, id):
 def view_media(request, id):
     media = get_object_or_404(Media, id=id)
     reviews = Review.objects.filter(media=media)
-    return render(request, 'media_details.html', {'media': media, 'reviews': reviews})
+    return render(request, 'media/media_detail.html', {'media': media, 'reviews': reviews})
 
 # List Favorites
 def favorites(request):
