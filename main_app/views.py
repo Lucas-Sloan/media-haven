@@ -49,12 +49,16 @@ def add_media(request, media_type=None):
     else:
         form = MediaForm()
 
+    # Only pass DIFFICULTY_CHOICES if media_type is 'game'
     context = {
         'form': form,
         'media_type': media_type,
         'media_type_choices': MEDIA_TYPE_CHOICES,  # Pass media type choices
-        'DIFFICULTY_CHOICES': Media.DIFFICULTY_CHOICES,
     }
+    
+    if media_type == 'game':
+        context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
+
     return render(request, 'media/media_form.html', context)
 
 # Edit Existing Media
