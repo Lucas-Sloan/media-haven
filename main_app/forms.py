@@ -1,5 +1,5 @@
 from django import forms
-from .models import Media, Review
+from .models import Media, Review, REVIEW_RATING
 
 class MediaForm(forms.ModelForm):
     class Meta:
@@ -9,8 +9,8 @@ class MediaForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['text', 'rating'] 
+        fields = ['rating', 'text']
 
     def __init__(self, *args, **kwargs):
         super(ReviewForm, self).__init__(*args, **kwargs)
-        self.fields['rating'].widget = forms.Select(choices=Review.REVIEW_RATING)
+        self.fields['rating'].widget = forms.Select(choices=REVIEW_RATING)

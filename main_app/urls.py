@@ -24,6 +24,8 @@ urlpatterns = [
     path('media/<int:id>/reviews/', views.media_reviews, name='media_reviews'),
     
     path('media/<int:id>/reviews/add/', views.add_review, name='add_review'),
+    
+    path('media/reviews/edit/<int:review_id>/', views.edit_review, name='edit_review'),
 
     path('media/<str:media_type>/', views.media_filtered, name='media_filtered'),
 
