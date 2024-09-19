@@ -51,17 +51,19 @@
             </div>
 
             <!-- Difficulty Field, Only for Games -->
-            <div class="form-group" id="difficulty-group" {% if media.media_type != 'game' and media_type != 'game' %}style="display:none;"{% endif %}>
+            {% if media_type == 'game' %}
+            <div class="form-group" id="difficulty-group">
                 <label for="difficulty">Difficulty</label>
                 <select id="difficulty" name="difficulty">
                     <option value="">Select Difficulty</option>
-                    {% for value, display in media.DIFFICULTY_CHOICES %}
-                        <option value="{{ value }}" {% if media.difficulty == value %}selected{% endif %}>
+                    {% for value, display in DIFFICULTY_CHOICES %}
+                        <option value="{{ value }}" {% if form.instance.difficulty == value %}selected{% endif %}>
                             {{ display }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
+        {% endif %}
 
             <div class="form-group">
                 <label for="notes">Notes (optional)</label>
