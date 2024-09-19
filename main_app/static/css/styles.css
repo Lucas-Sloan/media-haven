@@ -1,9 +1,20 @@
-body {
+ /* General Dark Mode Styling */
+ body {
     background-color: #121212; /* Dark background */
     color: #e0e0e0; /* Light text */
     font-family: Arial, sans-serif;
 }
 
+a {
+    color: #f0f0f0;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Sidebar styling */
 .sidebar {
     background-color: #1f1f1f;
     padding: 20px;
@@ -53,12 +64,14 @@ body {
     background-color: #b71c1c;
 }
 
+/* Content styling */
 .content {
     margin-left: 270px;
     padding: 20px;
-}
+} 
 
-.media-card {
+ /* Media Cards */
+ .media-card {
     background-color: #1f1f1f;
     border: 1px solid #333;
     border-radius: 8px;
@@ -107,6 +120,7 @@ body {
     background-color: #e53935;
 }
 
+/* Table styling */
 table {
     width: 100%;
     border-collapse: collapse;
@@ -128,6 +142,7 @@ table td {
     color: #e0e0e0;
 }
 
+/* Form input, select, and button styling */
 input, select, textarea, button {
     background-color: #333;
     color: #e0e0e0;
@@ -149,6 +164,129 @@ button.submit-btn:hover {
     background-color: #b71c1c;
 }
 
+/* Hidden fields styling */
 .hidden {
     display: none;
 }
+
+/* Media Form Page */
+.media-form-page {
+    padding: 40px;
+    max-width: 800px;
+}
+
+.media-form-page h1 {
+    font-size: 36px;
+    margin-bottom: 40px;
+}
+
+.media-form-page form {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+ /* Media Details Page */
+ .media-details-page {
+    padding: 40px;
+    max-width: 900px;
+}
+
+.media-details-container {
+    display: flex;
+    gap: 40px;
+    margin-bottom: 40px;
+}
+
+.media-image {
+    width: 300px;
+    height: 450px;
+    background-color: #333;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.media-image img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+}
+
+.media-info {
+    flex: 1;
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+.media-info p {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.media-info p strong {
+    display: inline-block;
+    width: 150px;
+    color: #ccc;
+}
+
+/* Reviews Section */
+.reviews-section {
+    margin-top: 40px;
+}
+
+.reviews-section h2 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.reviews-container {
+    display: flex;
+    gap: 20px;
+}
+
+.review-card {
+    background-color: #1f1f1f;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+    flex: 1;
+}
+
+.review-card p {
+    font-size: 16px;
+}
+
+.review-card h3 {
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+/* Delete Button */
+button.delete-btn {
+    background-color: #e74c3c;
+    padding: 10px 20px;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button.delete-btn:hover {
+    background-color: #c0392b;
+} 
