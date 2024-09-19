@@ -31,7 +31,7 @@ class Media(models.Model):
         MinValueValidator(0)
     ])  # User's rating
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='p')
-    difficulty = models.CharField(max_length=50)  # Could be Easy, Medium, Hard, etc.
+    difficulty = models.CharField(max_length=50,blank=True,null=True)  # Could be Easy, Medium, Hard, etc.
     image_url = models.URLField(blank=True)  # Filled by API
     notes = models.TextField(blank=True)  # Optional user notes
     is_favorite = models.BooleanField(default=False)  # Mark as favorite

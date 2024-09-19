@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}{{ media_type|title }}{% endblock %}
 
@@ -29,9 +30,9 @@
                 <td>{{ forloop.counter }}</td>
                 <td><img src="{{ media.image_url }}" alt="{{ media.title }} cover" class="table-image"></td>
                 <td>
-                <a href="{% url view_media %}">
-                    {{ media.title }}
-                </a>  
+                    <a href="{% url 'view_media' media.id %}">
+                        {{ media.title }}
+                    </a>  
                 </td>              
                 <td>{{ media.rating }}</td>
                 <td>{{ media.genre }}</td>
@@ -45,15 +46,4 @@
             {% endfor %}
         </tbody>
     </table>
-    {% comment %} <script>
-        // JavaScript to make the entire row clickable
-        document.addEventListener("DOMContentLoaded", function() {
-            const rows = document.querySelectorAll(".clickable-row");
-            rows.forEach(function(row) {
-                row.addEventListener("click", function() {
-                    window.location = row.getAttribute("data-href");
-                });
-            });
-        });
-    </script>  {% endcomment %}
 {% endblock %} 
