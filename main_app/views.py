@@ -73,6 +73,14 @@ def edit_media(request, id):
     }
     return render(request, 'media/media_form.html', context)
 
+# Delete Media
+def delete_media(request, id):
+    media = get_object_or_404(Media, id=id)
+    if request.method == 'POST':
+        media.delete()
+        return redirect('media_filtered', media_type=media.media_type)  # Redirect to the filtered media list
+    return render(request, 'confirm_delete_media.html', {'media': media})
+
 # View Media Details
 def view_media(request, id):
     media = get_object_or_404(Media, id=id)
