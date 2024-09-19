@@ -99,12 +99,14 @@ def favorites(request):
 
 # View Media Reviews
 def media_reviews(request, id):
+
     media = get_object_or_404(Media, id=id)
     reviews = Review.objects.filter(media=media)
-    return render(request, 'media_reviews.html', {'media': media, 'reviews': reviews})
+    return render(request, 'media/media_detail.html', {'media': media, 'reviews': reviews})
 
 # Add a Review to Media
 def add_review(request, id):
+  
     media = get_object_or_404(Media, id=id)
     if request.method == 'POST':
         form = ReviewForm(request.POST)
@@ -112,15 +114,34 @@ def add_review(request, id):
             review = form.save(commit=False)
             review.media = media
             review.save()
-            return redirect('media_reviews', id=id)
+            return redirect('media_reviews', id=id)  # Redirect to the media's reviews
     else:
         form = ReviewForm()
-    return render(request, 'add_review.html', {'form': form, 'media': media})
+
+    return render(request, 'review/review_form.html', {'form': form, 'media': media, 'review': None})
+
+# Edit an Existing Review
+def edit_review(request, review_id):
+ 
+    review = get_object_or_404(Review, id=review_id)
+    media = review.media  # Retrieve the associated media item
+    if request.method == 'POST':
+        form = ReviewForm(request.POST, instance=review)
+        if form.is_valid():
+            form.save()
+            return redirect('media_reviews', id=media.id)
+    else:
+        form = ReviewForm(instance=review)
+
+    return render(request, 'review/review_form.html', {'form': form, 'media': media, 'review': review})
 
 # Delete a Review
 def delete_review(request, id, review_id):
+   
     review = get_object_or_404(Review, id=review_id)
+    media = review.media
     if request.method == 'POST':
         review.delete()
-        return redirect('media_reviews', id=id)
-    return render(request, 'confirm_delete.html', {'review': review})
+        return redirect('media_reviews', id=media.id)
+
+    return render(request, 'confirm_delete.html', {'review': review, 'media': media}) 
