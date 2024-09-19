@@ -23,7 +23,11 @@
             {% csrf_token %}
 
             <!-- Hidden Media Type Field -->
-            <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type|default_if_none:media_type }}">
+            {% if media %}
+                <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type }}">
+            {% else %}
+                <input type="hidden" id="media_type" name="media_type" value="{{ media_type }}">
+            {% endif %}
 
             <div class="form-group">
                 <label for="title">Title</label>
@@ -68,6 +72,3 @@
         </form>
     </div>
 {% endblock %}
-
-
-

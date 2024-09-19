@@ -62,7 +62,7 @@ def edit_media(request, id):
         form = MediaForm(request.POST, instance=media)
         if form.is_valid():
             form.save()
-            return redirect('media_filtered', media_type=media.media_type)  # Redirect to filtered view
+            return redirect('media_filtered', media_type=media.media_type)
     else:
         form = MediaForm(instance=media)
 
