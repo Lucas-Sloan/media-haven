@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.models import User
 
 MEDIA_TYPE_CHOICES = [
     ('movie', 'Movie'),
@@ -44,6 +45,7 @@ class Media(models.Model):
     is_favorite = models.BooleanField(default=False)  # Mark as favorite
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'{self.title} ({self.media_type})'
@@ -54,6 +56,7 @@ class Review(models.Model):
     rating = models.CharField(max_length=3, choices=REVIEW_RATING, blank=True)  # Optional rating
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f'Review for {self.media.title}'
