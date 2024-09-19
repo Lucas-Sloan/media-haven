@@ -1,5 +1,5 @@
- /* General Dark Mode Styling */
- body {
+/* General Dark Mode Styling */
+body {
     background-color: #121212; /* Dark background */
     color: #e0e0e0; /* Light text */
     font-family: Arial, sans-serif;
@@ -68,10 +68,10 @@ a:hover {
 .content {
     margin-left: 270px;
     padding: 20px;
-} 
+}
 
- /* Media Cards */
- .media-card {
+/* Media Cards */
+.media-card {
     background-color: #1f1f1f;
     border: 1px solid #333;
     border-radius: 8px;
@@ -197,8 +197,8 @@ button.submit-btn:hover {
     font-size: 18px;
 }
 
- /* Media Details Page */
- .media-details-page {
+/* Media Details Page */
+.media-details-page {
     padding: 40px;
     max-width: 900px;
 }
@@ -256,6 +256,7 @@ button.submit-btn:hover {
 
 .reviews-container {
     display: flex;
+    flex-direction: column;
     gap: 20px;
 }
 
@@ -276,8 +277,14 @@ button.submit-btn:hover {
     font-size: 20px;
 }
 
-/* Delete Button */
-button.delete-btn {
+.edit-review {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+button.delete-btn, button.cancel-btn {
     background-color: #e74c3c;
     padding: 10px 20px;
     color: white;
@@ -287,6 +294,35 @@ button.delete-btn {
     font-size: 16px;
 }
 
-button.delete-btn:hover {
+button.delete-btn:hover, button.cancel-btn:hover {
     background-color: #c0392b;
-} 
+}
+
+/* Confirmation Page Styling */
+.confirm-delete-page {
+    background-color: #1f1f1f; /* Dark background */
+    color: #e0e0e0; /* Light text */
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.confirm-delete-page h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.review-info, .media-info {
+    background-color: #2c2c2c;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.review-info p, .media-info p {
+    font-size: 1.1em;
+    margin: 10px 0;
+}

@@ -141,13 +141,13 @@ def edit_review(request, review_id):
 
     return render(request, 'review/review_form.html', {'form': form, 'media': media, 'review': review})
 
-# Delete a Review
+# Confirm Delete and Delete Review
 def delete_review(request, id, review_id):
-
     review = get_object_or_404(Review, id=review_id)
     media = review.media
+
     if request.method == 'POST':
         review.delete()
         return redirect('media_reviews', id=media.id)
-
-    return render(request, 'review/confirm_delete.html', {'review': review, 'media': media}) 
+    
+    return render(request, 'review/confirm_delete_review.html', {'review': review, 'media': media})
