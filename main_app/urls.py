@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('media/add/<str:media_type>/', views.add_media, name='add_media_by_type'),
 
-     path('media/edit/<int:id>/', views.edit_media, name='edit_media'),
+    path('media/edit/<int:id>/', views.edit_media, name='edit_media'),
 
     path('media/', views.media_index, name='media_index'),
 
