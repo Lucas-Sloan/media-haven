@@ -47,6 +47,10 @@
                         <a href="{% url 'edit_review' review.id %}">
                             <button type="button" class="submit-btn">Edit Review</button>
                         </a>
+                        <form action="{% url 'confirm_delete_review' media.id review.id %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="delete-btn">Delete</button>
+                        </form> 
                     </div>
                 </div>
                 {% empty %}
