@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}MediaHaven{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'css/styles.css' %}"> 
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   </head>
   <body>
     <div class="sidebar">
@@ -13,9 +13,20 @@
         alt="Media Haven Title Logo"
       />
 
-      <p>Username</p>
-      <button class="logout">Log Out</button>
+      <!-- Display username if the user is authenticated -->
+      {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }}</p>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button type="submit" class="logout">Log Out</button>
+        </form>
+      {% else %}
+        <a href="{% url 'home' %}">Login</a>
+        {% comment %} <a href="{% url 'signup' %}">Sign Up</a> {% endcomment %}
+      {% endif %}
+
       <a href="{% url 'dashboard' %}">Dashboard</a>
+
       <!-- Movies -->
       <a href="{% url 'media_filtered' 'movie' %}">
         <img src="{% static 'images/movie_icon.png' %}" alt="All Movies Icon" />
@@ -38,6 +49,7 @@
         <img src="{% static 'images/tv_icon.png' %}" alt="Add a TV Show Icon" />
         Add a TV Show
       </a>
+
       <!-- Anime -->
       <a href="{% url 'media_filtered' 'anime' %}">
         <img src="{% static 'images/anime_icon.png' %}" alt="All Anime Icon" />
