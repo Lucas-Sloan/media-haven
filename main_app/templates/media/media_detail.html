@@ -48,6 +48,11 @@
                 <p>No reviews available for this media.</p>
                 {% endfor %}
             </div>
+            <div class="add-review">
+                <a href="{% url 'add_review' media.id %}">
+                    <button type="button" class="submit-btn">Add Review</button>
+                </a>
+            </div>
             <div>
                 <form action="{% url 'confirm_delete_media' media.id %}">
                     {% csrf_token %}
