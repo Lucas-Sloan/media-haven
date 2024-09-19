@@ -148,3 +148,7 @@ button.submit-btn {
 button.submit-btn:hover {
     background-color: #b71c1c;
 }
+
+.hidden {
+    display: none;
+}
