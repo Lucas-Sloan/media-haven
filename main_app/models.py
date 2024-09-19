@@ -19,6 +19,13 @@ REVIEW_RATING = [
     ('r', 'Recommended'),
     ('nr', 'Not Recommended'),
     ('otf', 'On The Fence'),
+    ('n/a', 'Not Rated'),
+]
+
+DIFFICULTY_CHOICES = [
+    ('e', 'Easy'),
+    ('m', 'Medium'),
+    ('h', 'Hard'),
 ]
 
 class Media(models.Model):
@@ -30,8 +37,8 @@ class Media(models.Model):
         MaxValueValidator(5),
         MinValueValidator(0)
     ])  # User's rating
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='p')
-    difficulty = models.CharField(max_length=50,blank=True,null=True)  # Could be Easy, Medium, Hard, etc.
+    status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='p')
+    difficulty = models.CharField(max_length=1, choices=DIFFICULTY_CHOICES, blank=True, null=True)
     image_url = models.URLField(blank=True)  # Filled by API
     notes = models.TextField(blank=True)  # Optional user notes
     is_favorite = models.BooleanField(default=False)  # Mark as favorite

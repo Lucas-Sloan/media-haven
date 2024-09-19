@@ -1,33 +1,28 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} 
+{% load static %} 
+{% block title %} 
+{% if review %}
+Edit Review for {{ media.title }} {% else %} Add Review for {{ media.title }} 
+{% endif %} {% endblock %} {% block content %}
+<div class="review-form-page">
+  <h1>
+    {% if review %} Edit Review for {{ media.title }} {% else %} Add Review for
+    {{ media.title }} {% endif %}
+  </h1>
+</div>
+<div>
+  <form
+    method="POST"
+    action="{% if review %}{% url 'edit_review' review.id %}{% else %}{% url 'add_review' media.id %}{% endif %}"
+  >
+    {% csrf_token %}
+    {{ form.as_p }}
 
-
-{% block title %}
-    {% if review %}
-        Edit Review for {{ media.title }}
-    {% else %}
-        Add Review for {{ media.title }}
-    {% endif %}
-{% endblock %}
-
-{% block content %}
-    <div class="review-form-page">
-        <h1>
-            {% if review %}
-                Edit Review for {{ media.title }}
-            {% else %}
-                Add Review for {{ media.title }}
-            {% endif %}
-        </h1>
-
-        <form method="POST" action="{% if review %}{% url 'edit_review' review.id %}{% else %}{% url 'add_review' media.id %}{% endif %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <div class="form-group">
-                <button type="submit" class="submit-btn">
-                    {% if review %} Update Review {% else %} Submit Review {% endif %}
-                </button>
-            </div>
-        </form>
+    <div class="form-group">
+      <button type="submit" class="submit-btn">
+        {% if review %} Update Review {% else %} Submit Review {% endif %}
+      </button>
     </div>
+  </form>
+</div>
 {% endblock %}
