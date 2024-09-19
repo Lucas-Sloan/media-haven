@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Media, Review
+from .models import Media, Review, MEDIA_TYPE_CHOICES
 from .forms import MediaForm, ReviewForm
 
 # Landing page view
@@ -44,10 +44,16 @@ def add_media(request, media_type=None):
             if media_type:
                 media.media_type = media_type
             media.save()
-            return redirect('media_index')
+            return redirect('media_filtered', media_type=media.media_type)  # Redirect to filtered view
     else:
         form = MediaForm()
-    return render(request, 'add_edit_media.html', {'form': form, 'media_type': media_type})
+
+    context = {
+        'form': form,
+        'media_type': media_type,
+        'media_type_choices': MEDIA_TYPE_CHOICES  # Pass media type choices
+    }
+    return render(request, 'media/media_form.html', context)
 
 # Edit Existing Media
 def edit_media(request, id):
@@ -56,10 +62,16 @@ def edit_media(request, id):
         form = MediaForm(request.POST, instance=media)
         if form.is_valid():
             form.save()
-            return redirect('media_index')
+            return redirect('media_filtered', media_type=media.media_type)  # Redirect to filtered view
     else:
         form = MediaForm(instance=media)
-    return render(request, 'add_edit_media.html', {'form': form, 'media': media})
+
+    context = {
+        'form': form,
+        'media': media,
+        'media_type_choices': MEDIA_TYPE_CHOICES  # Pass media type choices
+    }
+    return render(request, 'media/media_form.html', context)
 
 # View Media Details
 def view_media(request, id):

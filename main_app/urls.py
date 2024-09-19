@@ -7,6 +7,12 @@ urlpatterns = [
 
     path('dashboard/', views.dashboard, name='dashboard'),
 
+    path('media/add/', views.add_media, name='add_media'),
+
+    path('media/add/<str:media_type>/', views.add_media, name='add_media_by_type'),
+
+     path('media/edit/<int:id>/', views.edit_media, name='edit_media'),
+
     path('media/', views.media_index, name='media_index'),
 
     path('media/<int:id>/', views.view_media, name='view_media'),
@@ -18,12 +24,6 @@ urlpatterns = [
     path('media/<str:media_type>/', views.media_filtered, name='media_filtered'),
 
     path('media/<str:media_type>/<str:status>/', views.media_filtered_status, name='media_filtered_status'),
-
-    path('media/add/', views.add_media, name='add_media'),
-
-    path('media/add/<str:media_type>/', views.add_media, name='add_media_by_type'),
-
-    path('media/edit/<int:id>/', views.edit_media, name='edit_media'),
 
     path('favorites/', views.favorites, name='favorites'),
 

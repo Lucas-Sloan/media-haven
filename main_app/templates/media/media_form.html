@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}
+    {% if media %}
+        Edit {{ media.get_media_type_display }}
+    {% else %}
+        Add {{ media_type_choices|dict_key:media_type }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    <div class="media-form-page">
+        <h1>
+            {% if media %}
+                Edit {{ media.get_media_type_display }}
+            {% else %}
+                Add {{ media_type_choices|dict_key:media_type }}
+            {% endif %}
+        </h1>
+
+        <form method="POST" action="{% if media %}{% url 'edit_media' media.id %}{% else %}{% url 'add_media_by_type' media_type %}{% endif %}">
+            {% csrf_token %}
+
+            <!-- Hidden Media Type Field -->
+            <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type|default_if_none:media_type }}">
+
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input type="text" id="title" name="title" value="{{ media.title|default_if_none:'' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating</label>
+                <input type="number" id="rating" name="rating" value="{{ media.rating|default_if_none:'' }}" min="1" max="5" required>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select id="status" name="status" required>
+                    <option value="" disabled {% if not media.status %}selected{% endif %}>Select Status</option>
+                    <option value="f" {% if media.status == 'f' %}selected{% endif %}>Finished</option>
+                    <option value="ip" {% if media.status == 'ip' %}selected{% endif %}>In Progress</option>
+                    <option value="p" {% if media.status == 'p' %}selected{% endif %}>Plan to Watch</option>
+                    <option value="dr" {% if media.status == 'dr' %}selected{% endif %}>Dropped</option>
+                </select>
+            </div>
+
+            <!-- Difficulty Field, Only for Games -->
+            <div class="form-group" id="difficulty-group" {% if media.media_type != 'game' and media_type != 'game' %}style="display:none;"{% endif %}>
+                <label for="difficulty">Difficulty</label>
+                <input type="text" id="difficulty" name="difficulty" value="{{ media.difficulty|default_if_none:'' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes (optional)</label>
+                <textarea id="notes" name="notes">{{ media.notes|default_if_none:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="is_favorite">Favorite?</label>
+                <input type="checkbox" id="is_favorite" name="is_favorite" {% if media.is_favorite %}checked{% endif %}>
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="submit-btn">Submit</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+
+
