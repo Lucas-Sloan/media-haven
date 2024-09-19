@@ -48,11 +48,11 @@
                 <p>No reviews available for this media.</p>
                 {% endfor %}
             </div>
-        </div>
-        <form method="POST" action="{% url 'delete_media' media.id %}">
-            {% csrf_token %}
-            <button type="submit" class="delete-btn">Delete Media</button>
-        </form> 
-    </div>
+            <div>
+                <form action="{% url 'confirm_delete_media' media.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="delete-btn">Delete Media</button>
+                </form>
+            </div>
 {% endblock %}
- 
+

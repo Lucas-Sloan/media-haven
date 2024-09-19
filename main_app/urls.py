@@ -9,9 +9,13 @@ urlpatterns = [
 
     path('media/add/', views.add_media, name='add_media'),
 
-    path('media/add/<str:media_type>/', views.add_media, name='add_media_by_type'),
-
     path('media/edit/<int:id>/', views.edit_media, name='edit_media'),
+    
+    path('media/<int:id>/confirm-delete/', views.confirm_delete_media, name='confirm_delete_media'),
+
+    path('media/<int:id>/delete/', views.delete_media, name='delete_media'),
+    
+    path('media/add/<str:media_type>/', views.add_media, name='add_media_by_type'),
 
     path('media/', views.media_index, name='media_index'),
 
@@ -29,5 +33,4 @@ urlpatterns = [
 
     path('media/<int:id>/reviews/delete/<int:review_id>/', views.delete_review, name='delete_review'),
 
-    path('media/<int:id>/delete/', views.delete_media, name='delete_media'), 
 ] 
