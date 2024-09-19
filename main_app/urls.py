@@ -28,4 +28,6 @@ urlpatterns = [
     path('favorites/', views.favorites, name='favorites'),
 
     path('media/<int:id>/reviews/delete/<int:review_id>/', views.delete_review, name='delete_review'),
+
+    path('media/<int:id>/delete/', views.delete_media, name='delete_media'), 
 ] 
