@@ -1,15 +1,25 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends 'base.html' %} {% load static %} {% block title %}Welcome to Media
+Haven{% endblock %} {% block content %}
+<div class="landing-page">
+  <div class="landing-logo">
+    <img
+      src="{% static 'images/media_haven_logo.png' %}"
+      alt="Media Haven Logo"
+      class="logo"
+    />
+  </div>
 
-{% block title %}Welcome to Media Haven{% endblock %}
+  <p class="tagline">
+    Sign Up or Sign In to organize and track your favorite media collections
+  </p>
+</div>
 
-{% block content %}
-    <div class="landing-page">
-        <div class="landing-logo">
-            <img src="{% static 'images/media_haven_logo.png' %}" alt="Media Haven Logo" class="logo">
-        </div>
-
-        <p class="tagline">Sign Up or Sign In to organize and track your favorite media collections</p>
-        
-    </div>
+<section>
+  <form action="{% url 'home' %}" method="post" class="login">
+    <h1>Login</h1>
+    {% csrf_token %} {{ form.as_p }}
+    <input type="hidden" name="next" value="{{ next }}" />
+    <button type="submit" class="btn submit">Login</button>
+  </form>
+</section>
 {% endblock %}

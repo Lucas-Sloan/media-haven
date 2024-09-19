@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Media, Review, MEDIA_TYPE_CHOICES, REVIEW_RATING, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
+from django.contrib.auth.views import LoginView
 
 # Landing page view
 def home(request):
@@ -151,3 +152,6 @@ def delete_review(request, id, review_id):
         return redirect('media_reviews', id=media.id)
     
     return render(request, 'review/confirm_delete_review.html', {'review': review, 'media': media})
+
+class Home(LoginView):
+    template_name = 'home.html'
