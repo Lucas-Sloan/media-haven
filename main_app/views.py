@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Media, Review, MEDIA_TYPE_CHOICES
+from .models import Media, Review, MEDIA_TYPE_CHOICES, REVIEW_RATING
 from .forms import MediaForm, ReviewForm
 
 # Landing page view
@@ -106,7 +106,7 @@ def media_reviews(request, id):
 
 # Add a Review to Media
 def add_review(request, id):
-  
+
     media = get_object_or_404(Media, id=id)
     if request.method == 'POST':
         form = ReviewForm(request.POST)
@@ -114,7 +114,7 @@ def add_review(request, id):
             review = form.save(commit=False)
             review.media = media
             review.save()
-            return redirect('media_reviews', id=id)  # Redirect to the media's reviews
+            return redirect('media_reviews', id=id)
     else:
         form = ReviewForm()
 

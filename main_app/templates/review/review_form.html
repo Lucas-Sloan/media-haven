@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
+
 {% block title %}
     {% if review %}
         Edit Review for {{ media.title }}
@@ -21,22 +22,7 @@
 
         <form method="POST" action="{% if review %}{% url 'edit_review' review.id %}{% else %}{% url 'add_review' media.id %}{% endif %}">
             {% csrf_token %}
-
-            <div class="form-group">
-                <label for="rating">Review Rating</label>
-                <select id="rating" name="rating" required>
-                    <option value="" disabled {% if not review.rating %}selected{% endif %}>Select Rating</option>
-                    <option value="r" {% if review.rating == 'r' %}selected{% endif %}>Recommended</option>
-                    <option value="nr" {% if review.rating == 'nr' %}selected{% endif %}>Not Recommended</option>
-                    <option value="otf" {% if review.rating == 'otf' %}selected{% endif %}>On The Fence</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="text">Review Text</label>
-                <textarea id="text" name="text" required>{{ review.text|default_if_none:'' }}</textarea>
-            </div>
-
+            {{ form.as_p }}
             <div class="form-group">
                 <button type="submit" class="submit-btn">
                     {% if review %} Update Review {% else %} Submit Review {% endif %}
