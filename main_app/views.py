@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Media, Review, MEDIA_TYPE_CHOICES, REVIEW_RATING
+from .models import Media, Review, MEDIA_TYPE_CHOICES, REVIEW_RATING, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
 
 # Landing page view
@@ -52,7 +52,8 @@ def add_media(request, media_type=None):
     context = {
         'form': form,
         'media_type': media_type,
-        'media_type_choices': MEDIA_TYPE_CHOICES  # Pass media type choices
+        'media_type_choices': MEDIA_TYPE_CHOICES,  # Pass media type choices
+        'DIFFICULTY_CHOICES': Media.DIFFICULTY_CHOICES,
     }
     return render(request, 'media/media_form.html', context)
 
@@ -71,6 +72,7 @@ def edit_media(request, id):
         'form': form,
         'media': media,
         'media_type_choices': MEDIA_TYPE_CHOICES  # Pass media type choices
+        
     }
     return render(request, 'media/media_form.html', context)
 
@@ -122,7 +124,7 @@ def add_review(request, id):
 
 # Edit an Existing Review
 def edit_review(request, review_id):
- 
+
     review = get_object_or_404(Review, id=review_id)
     media = review.media  # Retrieve the associated media item
     if request.method == 'POST':
@@ -137,11 +139,11 @@ def edit_review(request, review_id):
 
 # Delete a Review
 def delete_review(request, id, review_id):
-   
+
     review = get_object_or_404(Review, id=review_id)
     media = review.media
     if request.method == 'POST':
         review.delete()
         return redirect('media_reviews', id=media.id)
 
-    return render(request, 'confirm_delete.html', {'review': review, 'media': media}) 
+    return render(request, 'review/confirm_delete.html', {'review': review, 'media': media}) 
