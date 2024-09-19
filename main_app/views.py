@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from .models import Media, Review, MEDIA_TYPE_CHOICES
 from .forms import MediaForm, ReviewForm
 
@@ -74,12 +75,16 @@ def edit_media(request, id):
     return render(request, 'media/media_form.html', context)
 
 # Delete Media
+def confirm_delete_media(request, id):
+    media = get_object_or_404(Media, id=id)
+    return render(request, 'media/confirm_delete_media.html', {'media': media})
+
 def delete_media(request, id):
     media = get_object_or_404(Media, id=id)
     if request.method == 'POST':
         media.delete()
         return redirect('media_filtered', media_type=media.media_type)  # Redirect to the filtered media list
-    return render(request, 'confirm_delete_media.html', {'media': media})
+    return render(request, 'media/media_index.html', {'media': media})
 
 # View Media Details
 def view_media(request, id):
