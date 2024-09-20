@@ -339,8 +339,9 @@ button.submit-btn:hover {
 
 .reviews-container {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 20px;
+    justify-content: space-around;
 }
 
 .review-card {
@@ -365,11 +366,56 @@ button.submit-btn:hover {
     justify-content: flex-start;
     gap: 10px;
     margin-top: 10px;
+    align-items: center;
+}
+
+.edit-review .submit-btn {
+    background-color: #98ff98;
+    color: black;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.edit-review .submit-btn:hover {
+    background-color: #7ed957;
+}
+
+.edit-review .delete-btn {
+    background-color: #e74c3c;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+    display: inline-block;
+}
+
+.add-review .submit-btn {
+    background-color: #1e90ff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.add-review .submit-btn:hover {
+    background-color: #0f6dc9;
 }
 
 button.delete-btn, button.cancel-btn {
     background-color: #e74c3c;
     padding: 10px 20px;
+    margin-top: 20px;
     color: white;
     border: none;
     border-radius: 5px;
