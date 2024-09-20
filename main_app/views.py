@@ -1,12 +1,16 @@
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views import View
 from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
+from django.http import JsonResponse
+from django.conf import settings
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
+from main_app.utils import fetch_omdb_data
 
 # Landing page view
 class Home(LoginView):
@@ -74,6 +78,7 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        form.instance.image_url = self.request.POST.get('image_url')  # Save the fetched image URL 
         media_type = self.kwargs.get('media_type')
         if media_type:
             form.instance.media_type = media_type
@@ -81,6 +86,7 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['omdb_api_key'] = settings.OMDB_API_KEY
         context['media_type'] = self.kwargs.get('media_type')
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
         if self.kwargs.get('media_type') == 'game':
@@ -91,6 +97,7 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
         if self.kwargs.get('media_type'):
             return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
         return reverse('media_index')
+
 
 # Edit Existing Media
 class MediaUpdateView(UpdateView):
@@ -202,3 +209,56 @@ class SignupView(CreateView):
 # Custom login view (uses built-in Django LoginView)
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
+    
+class MediaFormView(View):
+    template_name = 'media/media_form.html'
+
+    def post(self, request, *args, **kwargs):
+        search_title = request.POST.get('search_title')
+        media_type = request.POST.get('media_type', kwargs.get('media_type', None))
+
+        # Initialize an empty form
+        form = MediaForm(request.POST)
+
+        if search_title:
+            # Fetch media data using the search title
+            media_data = fetch_omdb_data(search_title)
+
+            if media_data:
+                # Pre-fill the form with the fetched data
+                form = MediaForm(initial={
+                    'title': media_data.get('title', ''),
+                    'genre': media_data.get('genre', ''),
+                    'description': media_data.get('description', ''),
+                    'image_url': media_data.get('image_url', ''),
+                    'rating': media_data.get('rating', ''),
+                    'status': media_data.get('status', None),  # Ensure this is handled
+                })
+            else:
+                # Handle case where no data was found
+                return render(request, self.template_name, {
+                    'form': form,
+                    'error': 'Media not found',
+                    'search_title': search_title,
+                    'media_type': media_type,
+                })
+
+        # Validate and save the form if it's not for search
+        if form.is_valid():
+            # If valid, save the form
+            form.save()
+            return redirect('media_index')
+
+        return render(request, self.template_name, {
+            'form': form,
+            'media_type': media_type,
+        })
+
+    def get(self, request, *args, **kwargs):
+        media_type = kwargs.get('media_type', None)
+        form = MediaForm()
+        return render(request, self.template_name, {
+            'form': form,
+            'media_type': media_type,
+        })
+
