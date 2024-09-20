@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+from django.contrib.auth.views import LogoutView
+
 urlpatterns = [
     path('', views.Home.as_view(), name='home'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
@@ -18,4 +20,9 @@ urlpatterns = [
     path('media/<int:media_id>/reviews/delete/<int:pk>/', views.ReviewDeleteView.as_view(), name='delete_review'),
     path('media/<str:media_type>/', views.MediaFilteredListView.as_view(), name='media_filtered'),
     path('media/<str:media_type>/<str:status>/', views.MediaFilteredStatusView.as_view(), name='media_filtered_status'),
+
+    # Authorization URLs
+    path('signup/', views.SignupView.as_view(), name='signup'),
+    path('login/', views.CustomLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
 ]

@@ -1,9 +1,10 @@
 from django.shortcuts import get_object_or_404, redirect, render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.views import LoginView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.forms import UserCreationForm
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
 
@@ -191,3 +192,13 @@ class ReviewDeleteView(DeleteView):
 
     def get_success_url(self):
         return reverse('media_reviews', kwargs={'pk': self.object.media.pk})
+    
+# Custom signup view
+class SignupView(CreateView):
+    form_class = UserCreationForm
+    template_name = 'registration/signup.html'
+    success_url = reverse_lazy('login')  # Redirect to login page after successful signup
+
+# Custom login view (uses built-in Django LoginView)
+class CustomLoginView(LoginView):
+    template_name = 'registration/login.html'
