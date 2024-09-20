@@ -26,10 +26,11 @@
         <!-- Hidden Media Type Field -->
         <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type|default:media_type }}">
 
-        <!-- Title Field with dynamic OMDB fetch -->
+        <!-- Title Field with dynamic OMDB fetch using datalist -->
         <div class="form-group">
             <label for="title">Title</label>
-            <input type="text" id="title" name="title" value="{{ form.initial.title|default_if_none:'' }}" required oninput="fetchOMDBData()">
+            <input type="text" id="title" name="title" value="{{ form.initial.title|default_if_none:'' }}" required list="title-suggestions" oninput="fetchOMDBSuggestions()">
+            <datalist id="title-suggestions"></datalist> <!-- Datalist for the dropdown suggestions -->
         </div>
 
         <!-- Rating Field -->
@@ -83,6 +84,43 @@
     </form>
 
     <script>
+        let debounceTimeout;
+
+        function fetchOMDBSuggestions() {
+            const titleInput = document.getElementById('title').value;
+            const omdbApiKey = '{{ omdb_api_key }}';  // Ensure this variable is properly set in your template context
+            const datalist = document.getElementById('title-suggestions');
+
+            if (titleInput.length < 3) {
+                datalist.innerHTML = ''; // Clear suggestions if input is less than 3 characters
+                return;
+            }
+
+            // Debounce to prevent too many API calls
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(() => {
+                fetch(`https://www.omdbapi.com/?s=${titleInput}&apikey=${omdbApiKey}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        datalist.innerHTML = ''; // Clear previous suggestions
+
+                        if (data.Response === "True") {
+                            data.Search.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.Title;
+                                datalist.appendChild(option);
+                            });
+                        } else {
+                            datalist.innerHTML = ''; // Clear datalist if no results
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from OMDB:', error);
+                    });
+            }, 300); // Delay the fetch by 300ms to reduce API calls
+        }
+
+        // Function to fetch detailed media data when a title is selected
         function fetchOMDBData() {
             const title = document.getElementById('title').value;
             const omdbApiKey = '{{ omdb_api_key }}';  // Ensure this variable is properly set in your template context
@@ -107,6 +145,9 @@
                     console.error('Error fetching data from OMDB:', error);
                 });
         }
+
+        // Attach an event listener to trigger `fetchOMDBData` when a title is selected
+        document.getElementById('title').addEventListener('change', fetchOMDBData);
     </script>
 </div>
 {% endblock %}
