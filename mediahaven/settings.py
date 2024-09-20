@@ -25,7 +25,7 @@ SECRET_KEY = config('SECRET_KEY')
 OMDB_API_KEY = config('OMDB_API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     'mediahaven-66f408da818e.herokuapp.com',  # Your Heroku app's URL
