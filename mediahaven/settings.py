@@ -79,7 +79,11 @@ WSGI_APPLICATION = 'mediahaven.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'mediahaven',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST', default='localhost'),  # Default to localhost if not set
+        'PORT': config('DB_PORT', default='5432'),  # Default PostgreSQL port
     }
 }
 
