@@ -8,6 +8,7 @@
   </head>
   <body>
     <div class="sidebar">
+      <!-- Title logo with adjusted class for styling -->
       {% if user.is_authenticated %}
       <a href="{% url 'dashboard' %}">
         <img
@@ -16,7 +17,7 @@
           class="navbar-title-logo"
         />
       </a>
-    {% else %}
+      {% else %}
       <a href="{% url 'home' %}">
         <img
           src="{% static 'images/media_haven_title.png' %}"
@@ -24,7 +25,7 @@
           class="navbar-title-logo"
         />
       </a>
-    {% endif %}
+      {% endif %}
 
       <!-- Conditional display based on user authentication -->
       {% if user.is_authenticated %}
@@ -37,54 +38,54 @@
         </form>
 
         <!-- Media-related links (only visible when logged in) -->
-        <a href="{% url 'media_filtered' 'movie' %}">
+        <a href="{% url 'media_filtered' 'movie' %}" class="sidebar-link">
           <img src="{% static 'images/movie_icon.png' %}" alt="All Movies Icon" />
           All Movies
         </a>
-        <a href="{% url 'add_media_by_type' 'movie' %}">
+        <a href="{% url 'add_media_by_type' 'movie' %}" class="sidebar-link">
           <img src="{% static 'images/movie_icon.png' %}" alt="Add a Movie Icon" />
           Add a Movie
         </a>
 
         <!-- TV Shows -->
-        <a href="{% url 'media_filtered' 'tv_show' %}">
+        <a href="{% url 'media_filtered' 'tv_show' %}" class="sidebar-link">
           <img src="{% static 'images/tv_icon.png' %}" alt="All TV Shows Icon" />
           All TV Shows
         </a>
-        <a href="{% url 'add_media_by_type' 'tv_show' %}">
+        <a href="{% url 'add_media_by_type' 'tv_show' %}" class="sidebar-link">
           <img src="{% static 'images/tv_icon.png' %}" alt="Add a TV Show Icon" />
           Add a TV Show
         </a>
 
         <!-- Anime -->
-        <a href="{% url 'media_filtered' 'anime' %}">
+        <a href="{% url 'media_filtered' 'anime' %}" class="sidebar-link">
           <img src="{% static 'images/anime_icon.png' %}" alt="All Anime Icon" />
           All Anime
         </a>
-        <a href="{% url 'add_media_by_type' 'anime' %}">
+        <a href="{% url 'add_media_by_type' 'anime' %}" class="sidebar-link">
           <img src="{% static 'images/anime_icon.png' %}" alt="Add Anime Icon" />
           Add an Anime
         </a>
 
         <!-- Video Games -->
-        <a href="{% url 'media_filtered' 'game' %}">
+        <a href="{% url 'media_filtered' 'game' %}" class="sidebar-link">
           <img src="{% static 'images/videogame_icon.png' %}" alt="All Video Games Icon" />
           All Video Games
         </a>
-        <a href="{% url 'add_media_by_type' 'game' %}">
+        <a href="{% url 'add_media_by_type' 'game' %}" class="sidebar-link">
           <img src="{% static 'images/videogame_icon.png' %}" alt="Add Video Game Icon" />
           Add a Video Game
         </a>
 
       {% else %}
         <!-- Sign Up and Login links when not signed in -->
-        <a href="{% url 'signup' %}">
+        <a href="{% url 'signup' %}" class="sidebar-register-link">
           <img src="{% static 'images/arrow_up.png' %}" alt="Sign Up" />
           Sign Up
         </a>
-        <a href="{% url 'login' %}">
+        <a href="{% url 'login' %}" class="sidebar-register-link">
           <img src="{% static 'images/arrow_down.png' %}" alt="Login" />
-          Login
+          Sign In
         </a>
       {% endif %}
     </div>
