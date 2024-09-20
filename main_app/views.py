@@ -111,8 +111,12 @@ class MediaUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
+        context['media_type'] = self.object.media_type  # Add this line to include media_type
         return context
 
+    def get_absolute_url(self):
+        return reverse('view_media', kwargs={'pk': self.pk})  # Replace 'view_media' with the actual name of your detail view
+    
 # Delete Media
 class MediaDeleteView(DeleteView):
     model = Media
