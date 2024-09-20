@@ -22,8 +22,9 @@ class DashboardView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['recently_added'] = Media.objects.order_by('-created_at')[:10]
-        context['favorites'] = Media.objects.filter(is_favorite=True)
+        user = self.request.user
+        context['recently_added'] = Media.objects.filter(user=user).order_by('-created_at')[:10]
+        context['favorites'] = Media.objects.filter(user=user, is_favorite=True)
         return context
 
 # Media Index (List all media)
@@ -32,6 +33,9 @@ class MediaListView(ListView):
     template_name = 'media/media_index.html'
     context_object_name = 'media_list'
 
+    def get_queryset(self):
+        return Media.objects.filter(user=self.request.user)
+
 # Media Filtered by Type (Movies, TV Shows, Anime, Video Games)
 class MediaFilteredListView(ListView):
     model = Media
@@ -39,7 +43,7 @@ class MediaFilteredListView(ListView):
     context_object_name = 'media_list'
 
     def get_queryset(self):
-        return Media.objects.filter(media_type=self.kwargs['media_type'])
+        return Media.objects.filter(media_type=self.kwargs['media_type'], user=self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -61,7 +65,8 @@ class MediaFilteredStatusView(ListView):
     def get_queryset(self):
         return Media.objects.filter(
             media_type=self.kwargs['media_type'],
-            status=self.kwargs['status']
+            status=self.kwargs['status'],
+            user=self.request.user
         )
 
     def get_context_data(self, **kwargs):
@@ -100,22 +105,31 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
 
 
 # Edit Existing Media
-class MediaUpdateView(UpdateView):
+class MediaUpdateView(LoginRequiredMixin, UpdateView):
     model = Media
     form_class = MediaForm
     template_name = 'media/media_form.html'
 
-    def get_success_url(self):
-        return self.object.get_absolute_url()
+    def form_valid(self, form):
+        form.instance.user = self.request.user 
+        form.instance.image_url = self.request.POST.get('image_url') 
+        media_type = self.kwargs.get('media_type')
+        if media_type:
+            form.instance.media_type = media_type
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['omdb_api_key'] = settings.OMDB_API_KEY
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
-        context['media_type'] = self.object.media_type  # Add this line to include media_type
+        context['media_type'] = self.object.media_type
+        if self.object.media_type == 'game':
+            context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
         return context
 
-    def get_absolute_url(self):
-        return reverse('view_media', kwargs={'pk': self.pk})  # Replace 'view_media' with the actual name of your detail view
+    def get_success_url(self):
+        # After updating, redirect to the media detail view
+        return reverse('view_media', kwargs={'pk': self.object.pk})
     
 # Delete Media
 class MediaDeleteView(DeleteView):
