@@ -15,6 +15,7 @@
 
         <form method="POST" action="{% url 'delete_review' media.id review.id %}">
             {% csrf_token %}
+            <input type="hidden" name="confirm" value="true">
             <button type="submit" class="delete-btn">Confirm Delete</button>
             <a href="{% url 'media_reviews' media.id %}">
                 <button type="button" class="cancel-btn">Cancel</button>

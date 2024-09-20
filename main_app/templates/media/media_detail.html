@@ -49,8 +49,9 @@
                         </a>
                         <form action="{% url 'delete_review' media.id review.id %}">
                             {% csrf_token %}
+                            <input type="hidden" name="confirm" value="true">
                             <button type="submit" class="delete-btn">Delete</button>
-                        </form> 
+                        </form>
                     </div>
                 </div>
                 {% empty %}
@@ -71,4 +72,3 @@
         </div>
     </div>
 {% endblock %}
-

@@ -1,157 +1,193 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.generic import TemplateView, ListView, DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-from .models import Media, Review, MEDIA_TYPE_CHOICES, REVIEW_RATING, DIFFICULTY_CHOICES
-from .forms import MediaForm, ReviewForm
 from django.contrib.auth.views import LoginView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
+from .forms import MediaForm, ReviewForm
 
 # Landing page view
-def home(request):
-    return render(request, 'home.html')
-
-# Dashboard view
-def dashboard(request):
-    # Display recently added media and favorites in the dashboard
-    recently_added = Media.objects.order_by('-created_at')[:10]
-    favorites = Media.objects.filter(is_favorite=True)
-    return render(request, 'dashboard.html', {
-        'recently_added': recently_added,
-        'favorites': favorites,
-    })
-
-# Media Index (List all media)
-def media_index(request):
-    media_list = Media.objects.all()  # Fetch all media
-    return render(request, 'media/media_index.html', {'media_list': media_list})
-
-# Media Filtered by Type (Movies, TV Shows, Anime, Video Games)
-def media_filtered(request, media_type):
-    media_list = Media.objects.filter(media_type=media_type)
-    return render(request, 'media/media_index.html', {'media_list': media_list, 'media_type': media_type})
-
-# Media Filtered by Type and Status (e.g., Watching, Watched, etc.)
-def media_filtered_status(request, media_type, status):
-    media_list = Media.objects.filter(media_type=media_type, status=status)
-    return render(request, 'media/media_index.html', {
-        'media_list': media_list,
-        'media_type': media_type,
-        'status': status,
-    })
-
-# Add Media (General or by Type)
-def add_media(request, media_type=None):
-    if request.method == 'POST':
-        form = MediaForm(request.POST)
-        if form.is_valid():
-            media = form.save(commit=False)
-            if media_type:
-                media.media_type = media_type
-            media.save()
-            return redirect('media_filtered', media_type=media.media_type)  # Redirect to filtered view
-    else:
-        form = MediaForm()
-
-    # Only pass DIFFICULTY_CHOICES if media_type is 'game'
-    context = {
-        'form': form,
-        'media_type': media_type,
-        'media_type_choices': MEDIA_TYPE_CHOICES,  # Pass media type choices
-    }
-    
-    if media_type == 'game':
-        context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
-
-    return render(request, 'media/media_form.html', context)
-
-# Edit Existing Media
-def edit_media(request, id):
-    media = get_object_or_404(Media, id=id)
-    if request.method == 'POST':
-        form = MediaForm(request.POST, instance=media)
-        if form.is_valid():
-            form.save()
-            return redirect('media_filtered', media_type=media.media_type)
-    else:
-        form = MediaForm(instance=media)
-
-    context = {
-        'form': form,
-        'media': media,
-        'media_type_choices': MEDIA_TYPE_CHOICES  # Pass media type choices
-        
-    }
-    return render(request, 'media/media_form.html', context)
-
-# Delete Media
-def confirm_delete_media(request, id):
-    media = get_object_or_404(Media, id=id)
-    return render(request, 'media/confirm_delete_media.html', {'media': media})
-
-def delete_media(request, id):
-    media = get_object_or_404(Media, id=id)
-    if request.method == 'POST':
-        media.delete()
-        return redirect('media_filtered', media_type=media.media_type)  # Redirect to the filtered media list
-    return render(request, 'media/media_index.html', {'media': media})
-
-# View Media Details
-def view_media(request, id):
-    media = get_object_or_404(Media, id=id)
-    reviews = Review.objects.filter(media=media)
-    return render(request, 'media/media_detail.html', {'media': media, 'reviews': reviews})
-
-# List Favorites
-def favorites(request):
-    favorite_list = Media.objects.filter(is_favorite=True)
-    return render(request, 'favorites.html', {'favorite_list': favorite_list})
-
-# View Media Reviews
-def media_reviews(request, id):
-
-    media = get_object_or_404(Media, id=id)
-    reviews = Review.objects.filter(media=media)
-    return render(request, 'media/media_detail.html', {'media': media, 'reviews': reviews})
-
-# Add a Review to Media
-def add_review(request, id):
-
-    media = get_object_or_404(Media, id=id)
-    if request.method == 'POST':
-        form = ReviewForm(request.POST)
-        if form.is_valid():
-            review = form.save(commit=False)
-            review.media = media
-            review.save()
-            return redirect('media_reviews', id=id)
-    else:
-        form = ReviewForm()
-
-    return render(request, 'review/review_form.html', {'form': form, 'media': media, 'review': None})
-
-# Edit an Existing Review
-def edit_review(request, review_id):
-
-    review = get_object_or_404(Review, id=review_id)
-    media = review.media  # Retrieve the associated media item
-    if request.method == 'POST':
-        form = ReviewForm(request.POST, instance=review)
-        if form.is_valid():
-            form.save()
-            return redirect('media_reviews', id=media.id)
-    else:
-        form = ReviewForm(instance=review)
-
-    return render(request, 'review/review_form.html', {'form': form, 'media': media, 'review': review})
-
-# Confirm Delete and Delete Review
-def delete_review(request, id, review_id):
-    review = get_object_or_404(Review, id=review_id)
-    media = review.media
-
-    if request.method == 'POST':
-        review.delete()
-        return redirect('media_reviews', id=media.id)
-    
-    return render(request, 'review/confirm_delete_review.html', {'review': review, 'media': media})
-
 class Home(LoginView):
     template_name = 'home.html'
+
+# Dashboard view
+class DashboardView(TemplateView):
+    template_name = 'dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['recently_added'] = Media.objects.order_by('-created_at')[:10]
+        context['favorites'] = Media.objects.filter(is_favorite=True)
+        return context
+
+# Media Index (List all media)
+class MediaListView(ListView):
+    model = Media
+    template_name = 'media/media_index.html'
+    context_object_name = 'media_list'
+
+# Media Filtered by Type (Movies, TV Shows, Anime, Video Games)
+class MediaFilteredListView(ListView):
+    model = Media
+    template_name = 'media/media_index.html'
+    context_object_name = 'media_list'
+
+    def get_queryset(self):
+        return Media.objects.filter(media_type=self.kwargs['media_type'])
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media_type'] = self.kwargs['media_type']
+        return context
+
+    def get_success_url(self):
+        media_type = self.kwargs.get('media_type')
+        if media_type:
+            return reverse('media_filtered', kwargs={'media_type': media_type})
+        return reverse('media_index')
+
+# Media Filtered by Type and Status
+class MediaFilteredStatusView(ListView):
+    model = Media
+    template_name = 'media/media_index.html'
+    context_object_name = 'media_list'
+
+    def get_queryset(self):
+        return Media.objects.filter(
+            media_type=self.kwargs['media_type'],
+            status=self.kwargs['status']
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media_type'] = self.kwargs['media_type']
+        context['status'] = self.kwargs['status']
+        return context
+
+# Add Media
+class MediaCreateView(LoginRequiredMixin, CreateView):
+    model = Media
+    form_class = MediaForm
+    template_name = 'media/media_form.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        media_type = self.kwargs.get('media_type')
+        if media_type:
+            form.instance.media_type = media_type
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media_type'] = self.kwargs.get('media_type')
+        context['media_type_choices'] = MEDIA_TYPE_CHOICES
+        if self.kwargs.get('media_type') == 'game':
+            context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
+        return context
+
+    def get_success_url(self):
+        if self.kwargs.get('media_type'):
+            return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
+        return reverse('media_index')
+
+# Edit Existing Media
+class MediaUpdateView(UpdateView):
+    model = Media
+    form_class = MediaForm
+    template_name = 'media/media_form.html'
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media_type_choices'] = MEDIA_TYPE_CHOICES
+        return context
+
+# Delete Media
+class MediaDeleteView(DeleteView):
+    model = Media
+    template_name = 'media/confirm_delete_media.html'
+
+    def get_success_url(self):
+        media_type = self.object.media_type
+        if media_type:
+            return reverse('media_filtered', kwargs={'media_type': media_type})
+        return reverse('media_index')
+
+# View Media Details
+class MediaDetailView(DetailView):
+    model = Media
+    template_name = 'media/media_detail.html'
+    context_object_name = 'media'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['reviews'] = Review.objects.filter(media=self.object)
+        return context
+
+# List Favorites
+class FavoritesListView(ListView):
+    model = Media
+    template_name = 'favorites.html'
+    context_object_name = 'favorite_list'
+
+    def get_queryset(self):
+        return Media.objects.filter(is_favorite=True)
+
+# Add Review
+class ReviewCreateView(CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'review/review_form.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media'] = get_object_or_404(Media, id=self.kwargs['pk'])
+        context['review'] = None
+        return context
+    
+    def form_valid(self, form):
+        review = form.save(commit=False)
+        review.media = get_object_or_404(Media, id=self.kwargs['pk'])
+        review.user = self.request.user
+        review.save()
+        return redirect(reverse('view_media', kwargs={'pk': review.media.pk}))
+    
+    def get_success_url(self):
+        return reverse('media_reviews', kwargs={'pk': self.object.media.pk})
+
+# Edit Review
+class ReviewUpdateView(UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'review/review_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media'] = self.object.media 
+        context['review'] = self.object  
+        return context
+    
+    def get_success_url(self):
+        return reverse('media_reviews', kwargs={'pk': self.object.media.pk})
+
+# Delete Review
+class ReviewDeleteView(DeleteView):
+    model = Review
+    template_name = 'review/confirm_delete_review.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['media'] = self.object.media  # Ensure 'object' is available
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()  # Retrieve the object
+        if 'confirm' in request.POST:
+            return super().post(request, *args, **kwargs)  # Proceed with deletion
+        return redirect(reverse('media_reviews', kwargs={'pk': self.object.media.pk}))  # Redirect if not confirmed
+
+    def get_success_url(self):
+        return reverse('media_reviews', kwargs={'pk': self.object.media.pk})

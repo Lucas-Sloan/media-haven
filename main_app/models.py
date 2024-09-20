@@ -39,12 +39,13 @@ class Media(models.Model):
         MinValueValidator(0)
     ])  # User's rating
     status = models.CharField(max_length=2, choices=STATUS_CHOICES, default='p')
-    difficulty = models.CharField(max_length=1, choices=DIFFICULTY_CHOICES, blank=True, null=True)
+    difficulty = models.CharField(max_length=1, choices=DIFFICULTY_CHOICES, blank=True)
     image_url = models.URLField(blank=True)  # Filled by API
     notes = models.TextField(blank=True)  # Optional user notes
     is_favorite = models.BooleanField(default=False)  # Mark as favorite
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
