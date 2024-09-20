@@ -87,6 +87,42 @@ a:hover {
     padding: 20px;
 }
 
+/* Landing Page Styling */
+.landing-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+}
+
+.landing-logo {
+    margin-bottom: 20px;
+}
+
+.landing-logo img {
+    max-width: 1000px;
+    width: 100%;
+    height: auto;
+}
+
+.tagline {
+    font-size: 1.5em;
+    color: #e0e0e0;
+    margin-top: 20px;
+    max-width: 600px;
+}
+
+.dashboard h1 {
+    font-size: 5em;
+    text-align: center;
+}
+
+.dashboard h2 {
+    font-size: 2em;
+    margin-left: 50px;
+}
 /* Media Cards */
 .media-card {
     background-color: #1f1f1f;
@@ -94,11 +130,15 @@ a:hover {
     border-radius: 8px;
     padding: 10px;
     margin-bottom: 20px;
+    margin-left: 50px;
     text-align: center;
+    max-width: 250px;
 }
 
 .media-card img {
-    max-width: 100px;
+    max-width: 250px;
+    width: 100%;
+    height: auto;
     border-radius: 5px;
 }
 
@@ -110,6 +150,13 @@ a:hover {
 .media-card p {
     font-size: 0.9em;
     color: #b0b0b0;
+}
+
+/* Grid Layout for Media Cards */
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
 }
 
 /* Tabs */
