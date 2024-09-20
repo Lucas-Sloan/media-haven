@@ -10,74 +10,103 @@
 {% endblock %}
 
 {% block content %}
-    <div class="media-form-page">
-        <h1>
-            {% if media %}
-                Edit {{ media.get_media_type_display }}
-            {% else %}
-                Add {{ media_type_choices|dict_key:media_type }}
-            {% endif %}
-        </h1>
-
-        <form method="POST" action="{% if media %}{% url 'edit_media' media.id %}{% else %}{% url 'add_media_by_type' media_type %}{% endif %}">
-            {% csrf_token %}
-
-            <!-- Hidden Media Type Field -->
-            {% if media %}
-                <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type }}">
-            {% else %}
-                <input type="hidden" id="media_type" name="media_type" value="{{ media_type }}">
-            {% endif %}
-
-            <div class="form-group">
-                <label for="title">Title</label>
-                <input type="text" id="title" name="title" value="{{ media.title|default_if_none:'' }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="rating">Rating</label>
-                <input type="number" id="rating" name="rating" value="{{ media.rating|default_if_none:'' }}" min="1" max="5" required>
-            </div>
-
-            <div class="form-group">
-                <label for="status">Status</label>
-                <select id="status" name="status" required>
-                    <option value="" disabled {% if not media.status %}selected{% endif %}>Select Status</option>
-                    <option value="f" {% if media.status == 'f' %}selected{% endif %}>Finished</option>
-                    <option value="ip" {% if media.status == 'ip' %}selected{% endif %}>In Progress</option>
-                    <option value="p" {% if media.status == 'p' %}selected{% endif %}>Plan to Watch</option>
-                    <option value="dr" {% if media.status == 'dr' %}selected{% endif %}>Dropped</option>
-                </select>
-            </div>
-
-            <!-- Difficulty Field, Only for Games -->
-            {% if media_type == 'game' %}
-            <div class="form-group" id="difficulty-group">
-                <label for="difficulty">Difficulty</label>
-                <select id="difficulty" name="difficulty">
-                    <option value="">Select Difficulty</option>
-                    {% for value, display in DIFFICULTY_CHOICES %}
-                        <option value="{{ value }}" {% if form.instance.difficulty == value %}selected{% endif %}>
-                            {{ display }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
+<div class="media-form-page">
+    <h1>
+        {% if media %}
+            Edit {{ media.get_media_type_display }}
+        {% else %}
+            Add {{ media_type_choices|dict_key:media_type }}
         {% endif %}
+    </h1>
 
-            <div class="form-group">
-                <label for="notes">Notes (optional)</label>
-                <textarea id="notes" name="notes">{{ media.notes|default_if_none:'' }}</textarea>
-            </div>
+    <!-- Main Media Form -->
+    <form method="POST" action="{% if media %}{% url 'edit_media' media.id %}{% else %}{% url 'add_media_by_type' media_type %}{% endif %}">
+        {% csrf_token %}
 
-            <div class="form-group">
-                <label for="is_favorite">Favorite?</label>
-                <input type="checkbox" id="is_favorite" name="is_favorite" {% if media.is_favorite %}checked{% endif %}>
-            </div>
+        <!-- Hidden Media Type Field -->
+        <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type|default:media_type }}">
 
-            <div class="form-group">
-                <button type="submit" class="submit-btn">Submit</button>
-            </div>
-        </form>
-    </div>
+        <!-- Title Field with dynamic OMDB fetch -->
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" value="{{ form.initial.title|default_if_none:'' }}" required oninput="fetchOMDBData()">
+        </div>
+
+        <!-- Rating Field -->
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <input type="number" id="rating" name="rating" value="{{ form.initial.rating|default_if_none:'' }}" min="1" max="5" required>
+        </div>
+
+        <!-- Status Field -->
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                <option value="" disabled {% if not media.status %}selected{% endif %}>Select Status</option>
+                <option value="f" {% if media.status == 'f' %}selected{% endif %}>Finished</option>
+                <option value="ip" {% if media.status == 'ip' %}selected{% endif %}>In Progress</option>
+                <option value="p" {% if media.status == 'p' %}selected{% endif %}>Plan to Watch</option>
+                <option value="dr" {% if media.status == 'dr' %}selected{% endif %}>Dropped</option>
+            </select>
+        </div>
+
+        <!-- Genre and Description Fields -->
+        <div class="form-group">
+            <label for="genre">Genre</label>
+            <input type="text" id="genre" name="genre" value="{{ form.initial.genre|default_if_none:'' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description">{{ form.initial.description|default_if_none:'' }}</textarea>
+        </div>
+
+        <!-- Hidden Image URL Field -->
+        <input type="hidden" id="image_url" name="image_url" value="{{ form.initial.image_url|default_if_none:'' }}">
+
+        <!-- Favorite Checkbox -->
+        <div class="form-group">
+            <label for="is_favorite">Favorite?</label>
+            <input type="checkbox" id="is_favorite" name="is_favorite" {% if media.is_favorite %}checked{% endif %}>
+        </div>
+
+        <!-- Notes Field -->
+        <div class="form-group">
+            <label for="notes">Notes (optional)</label>
+            <textarea id="notes" name="notes">{{ media.notes|default_if_none:'' }}</textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="form-group">
+            <button type="submit" class="submit-btn">Submit</button>
+        </div>
+    </form>
+
+    <script>
+        function fetchOMDBData() {
+            const title = document.getElementById('title').value;
+            const omdbApiKey = '{{ omdb_api_key }}';  // Ensure this variable is properly set in your template context
+            if (title.length < 3) return;  // Only fetch after the user has typed a few characters
+    
+            fetch(`http://www.omdbapi.com/?t=${title}&apikey=${omdbApiKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);  // Log the data to see the response structure
+                    if (data.Response === "True") {
+                        // Fill in the form fields with fetched data
+                        document.getElementById('genre').value = data.Genre || '';
+                        document.getElementById('description').value = data.Plot || '';
+                        const imageUrl = data.Poster || '';  // Use the fetched image URL
+                        const mediaImageInput = document.getElementById('image_url');
+                        mediaImageInput.value = imageUrl; // Set the hidden input value
+                    } else {
+                        console.error('Media not found:', data.Error); // Log an error if media is not found
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data from OMDB:', error);
+                });
+        }
+    </script>
+</div>
 {% endblock %}
