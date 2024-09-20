@@ -206,6 +206,22 @@ table td {
     color: #e0e0e0;
 }
 
+/* Container for the image */
+.table-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+/* Image styling */
+.table-image {
+    max-width: 100px;
+    width: 80%;
+    height: 80%;
+    border-radius: 5px;
+}
+
 /* Form input, select, and button styling */
 input, select, textarea, button {
     background-color: #333;
@@ -265,10 +281,13 @@ button.submit-btn:hover {
 .media-details-page {
     padding: 40px;
     max-width: 900px;
+    margin: 0 auto;
 }
 
 .media-details-container {
     display: flex;
+    justify-content: center;
+    align-items: center;
     gap: 40px;
     margin-bottom: 40px;
 }
@@ -300,10 +319,10 @@ button.submit-btn:hover {
 .media-info p {
     font-size: 18px;
     margin-bottom: 10px;
+    padding: 10px 0px;
 }
 
 .media-info p strong {
-    display: inline-block;
     width: 150px;
     color: #ccc;
 }

@@ -32,7 +32,11 @@
             {% for media in media_list %}
             <tr> 
                 <td>{{ forloop.counter }}</td>
-                <td><img src="{{ media.image_url }}" alt="{{ media.title }} cover" class="table-image"></td>
+                <td>
+                    <div class="table-image-container">
+                        <img src="{{ media.image_url }}" alt="{{ media.title }} cover" class="table-image">
+                    </div>
+                </td>
                 <td>
                     <a href="{% url 'view_media' media.id %}">
                         {{ media.title }}
