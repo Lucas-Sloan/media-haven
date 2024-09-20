@@ -88,7 +88,7 @@
             const omdbApiKey = '{{ omdb_api_key }}';  // Ensure this variable is properly set in your template context
             if (title.length < 3) return;  // Only fetch after the user has typed a few characters
     
-            fetch(`http://www.omdbapi.com/?t=${title}&apikey=${omdbApiKey}`)
+            fetch(`https://www.omdbapi.com/?t=${title}&apikey=${omdbApiKey}`)
                 .then(response => response.json())
                 .then(data => {
                     console.log(data);  // Log the data to see the response structure
