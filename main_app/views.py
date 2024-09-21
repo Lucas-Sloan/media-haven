@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.conf import settings
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
-from main_app.utils import fetch_omdb_data
+from main_app.utils import fetch_omdb_data, fetch_giantbomb_game_data
 
 # Landing page view
 class Home(LoginView):
@@ -83,15 +83,41 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.image_url = self.request.POST.get('image_url')  # Save the fetched image URL 
         media_type = self.kwargs.get('media_type')
+        
+        # Check if the media type is 'game' and use the GiantBomb API
+        if media_type == 'game':
+            search_title = self.request.POST.get('title')
+            game_data = fetch_giantbomb_game_data(search_title)
+
+            if game_data:
+                # Populate form fields with data fetched from GiantBomb
+                form.instance.title = game_data.get('title')
+                form.instance.genre = game_data.get('genre', '')
+                form.instance.description = game_data.get('description', '')
+                form.instance.image_url = game_data.get('image_url', '')
+        else:
+            # Use OMDB API for movies/TV shows
+            search_title = self.request.POST.get('title')
+            media_data = fetch_omdb_data(search_title)
+
+            if media_data:
+                # Populate form fields with data fetched from OMDB
+                form.instance.title = media_data.get('title')
+                form.instance.genre = media_data.get('genre', '')
+                form.instance.description = media_data.get('description', '')
+                form.instance.image_url = media_data.get('image_url', '')
+
+        # Ensure media type is assigned
         if media_type:
             form.instance.media_type = media_type
+        
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['omdb_api_key'] = settings.OMDB_API_KEY
+        context['giantbomb_api_key'] = settings.GIANTBOMB_API_KEY
         context['media_type'] = self.kwargs.get('media_type')
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
         if self.kwargs.get('media_type') == 'game':
@@ -111,18 +137,40 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'media/media_form.html'
 
     def form_valid(self, form):
-        form.instance.user = self.request.user 
-        form.instance.image_url = self.request.POST.get('image_url') 
+        form.instance.user = self.request.user
         media_type = self.kwargs.get('media_type')
-        if media_type:
-            form.instance.media_type = media_type
+        
+        # Check if the media type is 'game' and fetch data from GiantBomb
+        if media_type == 'game':
+            search_title = self.request.POST.get('title')
+            game_data = fetch_giantbomb_game_data(search_title)
+
+            if game_data:
+                # Update the media instance with the fetched GiantBomb data
+                form.instance.title = game_data.get('title')
+                form.instance.genre = game_data.get('genre', '')
+                form.instance.description = game_data.get('description', '')
+                form.instance.image_url = game_data.get('image_url', '')
+        else:
+            # Use OMDB API for movies/TV shows
+            search_title = self.request.POST.get('title')
+            media_data = fetch_omdb_data(search_title)
+
+            if media_data:
+                # Update the media instance with the fetched OMDB data
+                form.instance.title = media_data.get('title')
+                form.instance.genre = media_data.get('genre', '')
+                form.instance.description = media_data.get('description', '')
+                form.instance.image_url = media_data.get('image_url', '')
+
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['omdb_api_key'] = settings.OMDB_API_KEY
+        context['giantbomb_api_key'] = settings.GIANTBOMB_API_KEY  # Add GiantBomb API Key to context
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
-        context['media_type'] = self.object.media_type
+        context['media_type'] = self.object.media_type  # Ensure media_type is passed
         if self.object.media_type == 'game':
             context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
         return context
@@ -130,7 +178,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
     def get_success_url(self):
         # After updating, redirect to the media detail view
         return reverse('view_media', kwargs={'pk': self.object.pk})
-    
+
 # Delete Media
 class MediaDeleteView(DeleteView):
     model = Media
