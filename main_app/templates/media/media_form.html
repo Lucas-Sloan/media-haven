@@ -26,7 +26,7 @@
         <!-- Hidden Media Type Field -->
         <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type|default:media_type }}">
 
-        <!-- Title Field with dynamic OMDB fetch using datalist -->
+        <!-- Title Field with dynamic RAWG fetch using datalist -->
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" id="title" name="title" value="{{ form.initial.title|default_if_none:'' }}" required list="title-suggestions" oninput="fetchMediaSuggestions()">
@@ -56,6 +56,7 @@
             <label for="genre">Genre</label>
             <input type="text" id="genre" name="genre" value="{{ form.initial.genre|default_if_none:'' }}">
         </div>
+
         <!-- Description Fields -->
         <div class="form-group">
             <label for="description">Description</label>
@@ -83,102 +84,149 @@
         </div>
     </form>
 
-    <script>
-        let debounceTimeout;
-    
-        function fetchMediaSuggestions() {
-            const titleInput = document.getElementById('title').value;
-            const mediaType = document.getElementById('media_type').value;
-            const datalist = document.getElementById('title-suggestions');
-    
-            if (titleInput.length < 3) {
-                datalist.innerHTML = ''; // Clear suggestions if input is less than 3 characters
-                return;
-            }
-    
-            // Debounce to prevent too many API calls
-            clearTimeout(debounceTimeout);
-            debounceTimeout = setTimeout(() => {
-                if (mediaType === 'game') {
-                    // Fetch from GiantBomb API for games
-                    fetchGiantBombSuggestions(titleInput);
-                } else {
-                    // Fetch from OMDB API for movies/TV shows
-                    fetchOMDBSuggestions(titleInput);
+    <div>
+        <script>
+            let debounceTimeout;
+
+            function fetchMediaSuggestions() {
+                const titleInput = document.getElementById('title').value;
+                const mediaType = document.getElementById('media_type').value;
+                const datalist = document.getElementById('title-suggestions');
+
+                if (titleInput.length < 3) {
+                    datalist.innerHTML = ''; // Clear suggestions if input is less than 3 characters
+                    return;
                 }
-            }, 300); // Delay the fetch by 300ms to reduce API calls
-        }
-    
-        function fetchGiantBombSuggestions(title) {
-            const datalist = document.getElementById('title-suggestions');
+
+                // Debounce to prevent too many API calls
+                clearTimeout(debounceTimeout);
+                debounceTimeout = setTimeout(() => {
+                    if (mediaType === 'game') {
+                        // Fetch from RAWG API for games
+                        fetchRawgSuggestions(titleInput);
+                    } else {
+                        // Fetch from OMDB API for movies/TV shows
+                        fetchOMDBSuggestions(titleInput);
+                    }
+                }, 300); // Delay the fetch by 300ms to reduce API calls
+            }
+
+            function fetchRawgSuggestions(title) {
+                const datalist = document.getElementById('title-suggestions');
             
-            fetch(`/api/fetch_giantbomb_data/?query=${encodeURIComponent(title)}`)
-                .then(response => response.json())
-                .then(data => {
-                    datalist.innerHTML = ''; // Clear previous suggestions
-    
-                    if (data.results.length > 0) {
-                        data.results.forEach(item => {
-                            const option = document.createElement('option');
-                            option.value = item.name;
-                            datalist.appendChild(option);
-                        });
-    
-                        // Immediately fetch detailed data for the first suggestion
-                        fetchGiantBombData(data.results[0].name);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data from GiantBomb:', error);
-                });
-        }
-    
-        function fetchGiantBombData(title) {
-            fetch(`/api/fetch_giantbomb_data/?query=${encodeURIComponent(title)}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.response = True) {
-                        const game = data.results[0];
-                        document.getElementById('genre').value = game.genres.map(genre => genre.name).join(', ') || '';
-                        document.getElementById('description').value = game.deck || '';
-                        document.getElementById('image_url').value = game.image.original_url || '';
-                    } else {
-                        console.error('Game not found');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data from your server:', error);
-                });
-        }
-    
-        function fetchOMDBData(title) {
-            const omdbApiKey = '{{ omdb_api_key }}';
-    
-            fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${omdbApiKey}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.Response === "True") {
-                        document.getElementById('genre').value = data.Genre || '';
-                        document.getElementById('description').value = data.Plot || '';
-                        document.getElementById('image_url').value = data.Poster || '';
-                    } else {
-                        console.error('Media not found:', data.Error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data from OMDB:', error);
-                });
-        }
-    
-        // Attach event listeners
-        document.getElementById('title').addEventListener('input', () => {
-            fetchMediaSuggestions();
-        });
-    
-        document.getElementById('media_type').addEventListener('change', () => {
-            fetchMediaSuggestions(); // Re-fetch suggestions when media type changes
-        });
-    </script>
-    
+                fetch(`/fetch_rawg_data/?query=${encodeURIComponent(title)}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        datalist.innerHTML = ''; // Clear previous suggestions
+            
+                        if (data.results && data.results.length > 0) {
+                            data.results.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.name; // Use 'name' for the title
+                                datalist.appendChild(option);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from RAWG:', error);
+                    });
+            }
+            
+            function fetchRawgData(title) {
+                fetch(`/fetch_rawg_data/?query=${encodeURIComponent(title)}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.results && data.results.length > 0) {
+                            const game = data.results[0];
+                            document.getElementById('genre').value = game.genres.map(genre => genre.name).join(', ') || '';
+                            document.getElementById('description').value = game.description_raw || game.description || ''; // Check both fields
+                            document.getElementById('image_url').value = game.background_image || ''; // Ensure this matches the RAWG response
+                        } else {
+                            console.error('No game found in the response.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from your server:', error);
+                    });
+            }
+            
+
+            function fetchOMDBSuggestions(title) {
+                const omdbApiKey = '{{ omdb_api_key }}';
+                const datalist = document.getElementById('title-suggestions');
+
+                fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${omdbApiKey}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        datalist.innerHTML = ''; // Clear previous suggestions
+
+                        if (data.Response === "True") {
+                            data.Search.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.Title;
+                                datalist.appendChild(option);
+                            });
+                        } else {
+                            console.error('No suggestions found.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from OMDB:', error);
+                    });
+            }
+
+            function fetchOMDBData(title) {
+                const omdbApiKey = '{{ omdb_api_key }}';
+
+                fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${omdbApiKey}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.Response === "True") {
+                            document.getElementById('genre').value = data.Genre || '';
+                            document.getElementById('description').value = data.Plot || '';
+                            document.getElementById('image_url').value = data.Poster || '';
+                        } else {
+                            console.error('Media not found:', data.Error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from OMDB:', error);
+                    });
+            }
+
+            // Attach event listeners
+            document.getElementById('title').addEventListener('input', () => {
+                fetchMediaSuggestions();
+            });
+
+            document.getElementById('media_type').addEventListener('change', () => {
+                fetchMediaSuggestions(); // Re-fetch suggestions when media type changes
+            });
+
+            // Listen for selection of an option from the datalist
+            document.getElementById('title').addEventListener('change', () => {
+                const selectedTitle = document.getElementById('title').value;
+                const mediaType = document.getElementById('media_type').value;
+                
+                if (mediaType === 'game') {
+                    fetchRawgData(selectedTitle);
+                } else {
+                    fetchOMDBData(selectedTitle);
+                }
+            });
+        </script>
+    </div>
 </div>
 {% endblock %}

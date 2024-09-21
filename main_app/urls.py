@@ -1,12 +1,12 @@
 from django.urls import path
 from . import views
-from .views import fetch_omdb_data, fetch_giantbomb_data
+from .views import fetch_omdb_data, fetch_rawg_data
 from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('', views.Home.as_view(), name='home'),
-    path('fetch-omdb/', fetch_omdb_data, name='fetch_omdb'),
-    path('api/fetch_giantbomb_data/', fetch_giantbomb_data, name='fetch_giantbomb_data'),
+    path('fetch_omdb/', fetch_omdb_data, name='fetch_omdb'),
+    path('fetch_rawg_data/', fetch_rawg_data, name='fetch_rawg_data'),
     path('dashboard/', views.DashboardView.as_view(), name='dashboard'),
     path('favorites/', views.FavoritesListView.as_view(), name='favorites'),
     path('media/', views.MediaListView.as_view(), name='media_index'),

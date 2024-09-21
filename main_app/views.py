@@ -8,10 +8,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.forms import UserCreationForm
 from django.http import JsonResponse
 from django.conf import settings
+from decouple import config
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
-from main_app.utils import fetch_omdb_data, fetch_giantbomb_game_data
+from main_app.utils import fetch_omdb_data, fetch_rawg_game_data
 import requests # type: ignore
+import logging # type: ignore
 
 # Landing page view
 class Home(LoginView):
@@ -85,21 +87,24 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         media_type = self.kwargs.get('media_type')
+        search_title = self.request.POST.get('title')
         
-        # Check if the media type is 'game' and use the GiantBomb API
-        if media_type == 'game':
-            search_title = self.request.POST.get('title')
-            game_data = fetch_giantbomb_game_data(search_title)
+        # Initialize game_data and media_data
+        game_data = None
+        media_data = None
 
-            if game_data:
-                # Populate form fields with data fetched from GiantBomb
-                form.instance.title = game_data.get('title')
-                form.instance.genre = game_data.get('genre', '')
-                form.instance.description = game_data.get('description', '')
-                form.instance.image_url = game_data.get('image_url', '')
+        # Fetch game data from RAWG if media_type is 'game'
+        if media_type == 'game':
+            game_data = fetch_rawg_game_data(search_title)
+
+        if game_data:
+    # Populate form fields with data fetched from RAWG
+            form.instance.title = game_data.get('title')
+            form.instance.genre = game_data.get('genre', '')
+            form.instance.description = game_data.get('description_raw') or game_data.get('description', '')
+            form.instance.image_url = game_data.get('image_url', '')
         else:
             # Use OMDB API for movies/TV shows
-            search_title = self.request.POST.get('title')
             media_data = fetch_omdb_data(search_title)
 
             if media_data:
@@ -112,7 +117,12 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
         # Ensure media type is assigned
         if media_type:
             form.instance.media_type = media_type
-        
+
+        # Check if title is set before saving
+        if not form.instance.title:
+            form.add_error('title', 'Unable to fetch media data. Please check the title and try again.')
+            return self.form_invalid(form)
+
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -130,27 +140,36 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
             return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
         return reverse('media_index')
     
-# Fetch GiantBomb Data
-def fetch_giantbomb_data(request):
-    query = request.GET.get('query')
-    if not query:
-        return JsonResponse({'error': 'No query provided'}, status=400)
+# Fetch RAWG Data
+def fetch_rawg_data(request):
+    query = request.GET.get('query', '')
+    api_key = config('RAWG_API_KEY')  # Retrieve the API key from environment variables
+    url = f'https://api.rawg.io/api/games'
 
-    giantbomb_api_key = settings.GIANTBOMB_API_KEY
+    params = {
+        'key': api_key,
+        'page_size': 5,  # Adjust page size as needed
+        'search': query,
+    }
+
     try:
-        response = requests.get('https://www.giantbomb.com/api/search/', params={
-            'query': query,
-            'resources': 'game',
-            'api_key': giantbomb_api_key,
-            'format': 'json'
-        })
-        
-        response.raise_for_status()
+        response = requests.get(url, params=params)
+        response.raise_for_status()  # Raise an exception if the request fails
+        data = response.json()
 
-        return JsonResponse(response.json())
-        
+        if data.get('results'):
+            return JsonResponse(data)
+        else:
+            logging.error(f"RAWG API error: No results found for query '{query}'.")
+            return JsonResponse({'error': 'No results found'}, status=404)
+
+    except requests.exceptions.Timeout:
+        logging.error('Request to RAWG API timed out.')
+        return JsonResponse({'error': 'Request timed out'}, status=504)
+
     except requests.exceptions.RequestException as e:
-        return JsonResponse({'error': str(e)}, status=500)
+        logging.error(f"RequestException occurred: {str(e)}")
+        return JsonResponse({'error': 'An error occurred while fetching data from RAWG'}, status=500)
 
 
 # Edit Existing Media
@@ -166,7 +185,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
         # Check if the media type is 'game' and fetch data from GiantBomb
         if media_type == 'game':
             search_title = self.request.POST.get('title')
-            game_data = fetch_giantbomb_game_data(search_title)
+            game_data = fetch_rawg_game_data(search_title)
 
             if game_data:
                 # Update the media instance with the fetched GiantBomb data
@@ -302,39 +321,36 @@ class CustomLoginView(LoginView):
 class MediaFormView(View):
     template_name = 'media/media_form.html'
 
+    def fetch_media_data(self, search_title):
+        return fetch_omdb_data(search_title)
+
     def post(self, request, *args, **kwargs):
         search_title = request.POST.get('search_title')
         media_type = request.POST.get('media_type', kwargs.get('media_type', None))
-
-        # Initialize an empty form
         form = MediaForm(request.POST)
 
         if search_title:
-            # Fetch media data using the search title
-            media_data = fetch_omdb_data(search_title)
+            media_data = self.fetch_media_data(search_title)
 
             if media_data:
-                # Pre-fill the form with the fetched data
-                form = MediaForm(initial={
+                form = MediaForm(initial={  # Pre-fill form
                     'title': media_data.get('title', ''),
                     'genre': media_data.get('genre', ''),
                     'description': media_data.get('description', ''),
                     'image_url': media_data.get('image_url', ''),
                     'rating': media_data.get('rating', ''),
-                    'status': media_data.get('status', None),  # Ensure this is handled
+                    'status': media_data.get('status', None),
                 })
             else:
-                # Handle case where no data was found
                 return render(request, self.template_name, {
                     'form': form,
                     'error': 'Media not found',
                     'search_title': search_title,
                     'media_type': media_type,
                 })
-
-        # Validate and save the form if it's not for search
+        
+        # Validate and save the form
         if form.is_valid():
-            # If valid, save the form
             form.save()
             return redirect('media_index')
 

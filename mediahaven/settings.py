@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 from decouple import config # type: ignore
+from django.conf import settings
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,9 +25,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 OMDB_API_KEY = config('OMDB_API_KEY')
 GIANTBOMB_API_KEY = config('GIANTBOMB_API_KEY')
+GIANTBOMB_API_URL = 'https://www.giantbomb.com/api/search/'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     'mediahaven-66f408da818e.herokuapp.com',  # Your Heroku app's URL
@@ -35,6 +37,8 @@ ALLOWED_HOSTS = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+
 
 # Application definition
 
