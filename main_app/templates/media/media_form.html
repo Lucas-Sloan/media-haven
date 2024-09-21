@@ -57,6 +57,18 @@
             <input type="text" id="genre" name="genre" value="{{ form.initial.genre|default_if_none:'' }}">
         </div>
 
+        {% if media_type == 'game' %}
+        <div class="form-group">
+            <label for="difficulty">Difficulty (optional)</label>
+            <select id="difficulty" name="difficulty">
+                <option value="" disabled selected>Select Difficulty</option>
+                {% for choice in DIFFICULTY_CHOICES %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
         <!-- Description Fields -->
         <div class="form-group">
             <label for="description">Description</label>
