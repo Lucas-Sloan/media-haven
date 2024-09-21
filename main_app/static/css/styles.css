@@ -117,11 +117,12 @@ a:hover {
 .dashboard h1 {
     font-size: 5em;
     text-align: center;
+    margin-top: 10px;
 }
 
 .dashboard h2 {
     font-size: 2em;
-    margin-left: 50px;
+    text-align: center;
 }
 
 /* Media Cards */
@@ -129,8 +130,8 @@ a:hover {
     background-color: #1f1f1f;
     border: 1px solid #333;
     border-radius: 8px;
-    max-width: 100dvh;
-    max-height: 100dvh;
+    max-width: 300px;
+    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     margin-left: 50px;
@@ -138,22 +139,25 @@ a:hover {
     display: flex;
     flex-direction: column; 
     justify-content: space-between; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .media-image {
-    max-width: 100dvh;
-    max-height: 100dvh;
+    width: 100%;
+    height: auto;
     border-radius: 5px;
     margin-bottom: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .media-info {
-    margin-top: auto; /* Push media info to the bottom */
+    margin-top: auto; 
     background-color: #2c2c2c;
     padding: 10px;
     border-radius: 8px;
-    text-align: left; /* Align text to the left */
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4); /* Optional shadow */
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+    width: 90%
 }
 
 .media-info h3 {
