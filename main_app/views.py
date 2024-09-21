@@ -128,7 +128,7 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['omdb_api_key'] = settings.OMDB_API_KEY
-        context['giantbomb_api_key'] = settings.GIANTBOMB_API_KEY
+        context['rawg_api_key'] = settings.RAWG_API_KEY
         context['media_type'] = self.kwargs.get('media_type')
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
         if self.kwargs.get('media_type') == 'game':
@@ -210,7 +210,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['omdb_api_key'] = settings.OMDB_API_KEY
-        context['giantbomb_api_key'] = settings.GIANTBOMB_API_KEY  # Add GiantBomb API Key to context
+        context['rawg_api_key'] = settings.RAWG_API_KEY
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
         context['media_type'] = self.object.media_type  # Ensure media_type is passed
         if self.object.media_type == 'game':
