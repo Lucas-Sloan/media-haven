@@ -157,8 +157,8 @@
                         if (data.results && data.results.length > 0) {
                             const game = data.results[0];
                             document.getElementById('genre').value = game.genres.map(genre => genre.name).join(', ') || '';
-                            document.getElementById('description').value = game.description_raw || game.description || ''; // Check both fields
-                            document.getElementById('image_url').value = game.background_image || ''; // Ensure this matches the RAWG response
+                            document.getElementById('description').value = game.description_raw || game.description || 'No description available';
+                            document.getElementById('image_url').value = game.background_image || '';
                         } else {
                             console.error('No game found in the response.');
                         }
