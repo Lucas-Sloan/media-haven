@@ -99,28 +99,32 @@
     <div>
         <script>
             let debounceTimeout;
-
+        
             function fetchMediaSuggestions() {
                 const titleInput = document.getElementById('title').value;
                 const datalist = document.getElementById('title-suggestions');
-
+                const mediaType = document.getElementById('media_type').value;
+        
                 if (titleInput.length < 3) {
                     datalist.innerHTML = ''; // Clear suggestions if input is less than 3 characters
                     return;
                 }
-
+        
                 // Debounce to prevent too many API calls
                 clearTimeout(debounceTimeout);
                 debounceTimeout = setTimeout(() => {
-                    // Fetch from OMDB API for movies, TV shows, and games (IMDb)
-                    fetchOMDBSuggestions(titleInput);
+                    if (mediaType === 'video_game') {
+                        fetchIGDBSuggestions(titleInput);
+                    } else {
+                        fetchOMDBSuggestions(titleInput);
+                    }
                 }, 300); // Delay the fetch by 300ms to reduce API calls
             }
-
+        
             function fetchOMDBSuggestions(title) {
                 const omdbApiKey = '{{ omdb_api_key }}';
                 const datalist = document.getElementById('title-suggestions');
-
+        
                 fetch(`https://www.omdbapi.com/?s=${encodeURIComponent(title)}&apikey=${omdbApiKey}`)
                     .then(response => {
                         if (!response.ok) throw new Error('Network response was not ok');
@@ -128,7 +132,7 @@
                     })
                     .then(data => {
                         datalist.innerHTML = ''; // Clear previous suggestions
-
+        
                         if (data.Response === "True") {
                             data.Search.forEach(item => {
                                 const option = document.createElement('option');
@@ -136,17 +140,62 @@
                                 datalist.appendChild(option);
                             });
                         } else {
-                            console.error('No suggestions found.');
+                            console.error('No suggestions found:', data.Error);
                         }
                     })
                     .catch(error => {
                         console.error('Error fetching data from OMDB:', error);
                     });
             }
-
+        
+            function fetchIGDBSuggestions(title) {
+                const igdbApiKey = '{{ igdb_api_key }}';
+                const datalist = document.getElementById('title-suggestions');
+        
+                fetch(`https://api.igdb.com/v4/games`, {
+                    method: 'POST',
+                    headers: {
+                        'Client-ID': igdbApiKey,
+                        'Authorization': 'Bearer {{ igdb_access_token }}', // Use the correct access token
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fields: 'name',
+                        where: `name ~* "${title}"`,
+                        limit: 5
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        datalist.innerHTML = ''; // Clear previous suggestions
+        
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.name;
+                            datalist.appendChild(option);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from IGDB:', error);
+                    });
+            }
+        
+            function fetchMediaData(title) {
+                const mediaType = document.getElementById('media_type').value;
+        
+                if (mediaType === 'video_game') {
+                    fetchIGDBData(title);
+                } else {
+                    fetchOMDBData(title);
+                }
+            }
+        
             function fetchOMDBData(title) {
                 const omdbApiKey = '{{ omdb_api_key }}';
-
+        
                 fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${omdbApiKey}`)
                     .then(response => {
                         if (!response.ok) throw new Error('Network response was not ok');
@@ -165,23 +214,50 @@
                         console.error('Error fetching data from OMDB:', error);
                     });
             }
-
+        
+            function fetchIGDBData(title) {
+                const igdbApiKey = '{{ igdb_api_key }}';
+        
+                fetch(`https://api.igdb.com/v4/games`, {
+                    method: 'POST',
+                    headers: {
+                        'Client-ID': igdbApiKey,
+                        'Authorization': 'Bearer {{ igdb_access_token }}', // Use the correct access token
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        fields: 'genres,summary,cover',
+                        where: `name = "${title}"`,
+                        limit: 1
+                    })
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.length > 0) {
+                            const gameData = data[0];
+                            document.getElementById('genre').value = gameData.genres ? gameData.genres.join(', ') : '';
+                            document.getElementById('description').value = gameData.summary || '';
+                            document.getElementById('image_url').value = gameData.cover ? `https:${gameData.cover.url}` : '';
+                        } else {
+                            console.error('Media not found: Game not found!');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching data from IGDB:', error);
+                    });
+            }
+        
             // Attach event listeners
-            document.getElementById('title').addEventListener('input', () => {
-                fetchMediaSuggestions();
-            });
-
-            document.getElementById('media_type').addEventListener('change', () => {
-                fetchMediaSuggestions(); // Re-fetch suggestions when media type changes
-            });
-
-            // Listen for selection of an option from the datalist
+            document.getElementById('title').addEventListener('input', fetchMediaSuggestions);
             document.getElementById('title').addEventListener('change', () => {
                 const selectedTitle = document.getElementById('title').value;
-                fetchOMDBData(selectedTitle);
+                fetchMediaData(selectedTitle);
             });
         </script>
+        
     </div>
-
 </div>
 {% endblock %}
