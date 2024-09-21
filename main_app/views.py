@@ -11,6 +11,7 @@ from django.conf import settings
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
 from main_app.utils import fetch_omdb_data, fetch_giantbomb_game_data
+import requests # type: ignore
 
 # Landing page view
 class Home(LoginView):
@@ -128,6 +129,28 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
         if self.kwargs.get('media_type'):
             return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
         return reverse('media_index')
+    
+# Fetch GiantBomb Data
+def fetch_giantbomb_data(request):
+    query = request.GET.get('query')
+    if not query:
+        return JsonResponse({'error': 'No query provided'}, status=400)
+
+    giantbomb_api_key = settings.GIANTBOMB_API_KEY
+    try:
+        response = requests.get('https://www.giantbomb.com/api/search/', params={
+            'query': query,
+            'resources': 'game',
+            'api_key': giantbomb_api_key,
+            'format': 'json'
+        })
+        
+        response.raise_for_status()
+
+        return JsonResponse(response.json())
+        
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 # Edit Existing Media

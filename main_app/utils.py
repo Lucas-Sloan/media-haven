@@ -1,7 +1,8 @@
 import requests
 from decouple import config
 
-
+GIANTBOMB_API_URL = 'https://www.giantbomb.com/api/'
+GIANTBOMB_API_KEY = config('GIANTBOMB_API_KEY')
 OMDB_API_URL = 'http://www.omdbapi.com/'
 API_KEY = config('OMDB_API_KEY')  # Get the API key from environment variables
 
@@ -38,8 +39,6 @@ def fetch_omdb_data(title):
     else:
         return None  # Handle network error or invalid response
 
-GIANTBOMB_API_URL = 'https://www.giantbomb.com/api/search/'
-GIANTBOMB_API_KEY = config('GIANTBOMB_API_KEY')
 
 def fetch_giantbomb_game_data(title):
     """Fetch game data from GiantBomb API by title."""
@@ -47,26 +46,27 @@ def fetch_giantbomb_game_data(title):
         'api_key': GIANTBOMB_API_KEY,
         'format': 'json',
         'query': title,
-        'resources': 'game',  # We're only searching for games
+        'resources': 'game',
     }
     headers = {
-        'User-Agent': 'MediaHaven Game Fetcher',  # GiantBomb requests that you send a User-Agent
+        'User-Agent': 'MediaHaven Game Fetcher',
     }
 
     response = requests.get(GIANTBOMB_API_URL, params=params, headers=headers)
     
     if response.status_code == 200:
         game_data = response.json()
-        if game_data['status_code'] == 1 and game_data['number_of_page_results'] > 0:
-            # If there are results, return the first result or map through multiple
+        if game_data.get('status_code') == 1 and game_data.get('number_of_page_results', 0) > 0:
             game = game_data['results'][0]
             return {
-                'title': game['name'],
-                'genre': ', '.join([genre['name'] for genre in game['genres']]) if 'genres' in game else 'Unknown',
-                'description': game.get('deck', 'No description available'),  # The brief summary of the game
-                'image_url': game['image']['small_url'] if 'image' in game else '',  # Small image URL
+                'title': game.get('name'),
+                'genre': ', '.join([genre.get('name') for genre in game.get('genres', [])]) or 'Unknown',
+                'description': game.get('deck', 'No description available'),
+                'image_url': game.get('image', {}).get('small_url', ''),  # Safe access to avoid KeyError
             }
         else:
-            return None  # No results found
+            print(f"GiantBomb API error: {game_data.get('error')}")
+            return None  # No results found or error
     else:
+        print(f"Error fetching data from GiantBomb: {response.status_code} - {response.text}")
         return None  # Handle network error or invalid response

@@ -51,12 +51,12 @@
             </select>
         </div>
 
-        <!-- Genre and Description Fields -->
+        <!-- Genre Fields -->
         <div class="form-group">
             <label for="genre">Genre</label>
             <input type="text" id="genre" name="genre" value="{{ form.initial.genre|default_if_none:'' }}">
         </div>
-
+        <!-- Description Fields -->
         <div class="form-group">
             <label for="description">Description</label>
             <textarea id="description" name="description">{{ form.initial.description|default_if_none:'' }}</textarea>
@@ -85,17 +85,17 @@
 
     <script>
         let debounceTimeout;
-
+    
         function fetchMediaSuggestions() {
             const titleInput = document.getElementById('title').value;
             const mediaType = document.getElementById('media_type').value;
             const datalist = document.getElementById('title-suggestions');
-
+    
             if (titleInput.length < 3) {
                 datalist.innerHTML = ''; // Clear suggestions if input is less than 3 characters
                 return;
             }
-
+    
             // Debounce to prevent too many API calls
             clearTimeout(debounceTimeout);
             debounceTimeout = setTimeout(() => {
@@ -108,66 +108,53 @@
                 }
             }, 300); // Delay the fetch by 300ms to reduce API calls
         }
-
-        function fetchOMDBSuggestions(title) {
-            const omdbApiKey = '{{ omdb_api_key }}';
+    
+        function fetchGiantBombSuggestions(title) {
             const datalist = document.getElementById('title-suggestions');
-
-            fetch(`https://www.omdbapi.com/?s=${title}&apikey=${omdbApiKey}`)
+            
+            fetch(`/api/fetch_giantbomb_data/?query=${encodeURIComponent(title)}`)
                 .then(response => response.json())
                 .then(data => {
                     datalist.innerHTML = ''; // Clear previous suggestions
-
-                    if (data.Response === "True") {
-                        data.Search.forEach(item => {
+    
+                    if (data.results.length > 0) {
+                        data.results.forEach(item => {
                             const option = document.createElement('option');
-                            option.value = item.Title;
+                            option.value = item.name;
                             datalist.appendChild(option);
                         });
-                    } else {
-                        datalist.innerHTML = ''; // Clear datalist if no results
+    
+                        // Immediately fetch detailed data for the first suggestion
+                        fetchGiantBombData(data.results[0].name);
                     }
-                })
-                .catch(error => {
-                    console.error('Error fetching data from OMDB:', error);
-                });
-        }
-
-        function fetchGiantBombSuggestions(title) {
-            const giantbombApiKey = '{{ giantbomb_api_key }}';
-            const datalist = document.getElementById('title-suggestions');
-
-            fetch(`https://www.giantbomb.com/api/search/?query=${title}&resources=game&api_key=${giantbombApiKey}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    datalist.innerHTML = ''; // Clear previous suggestions
-
-                    data.results.forEach(item => {
-                        const option = document.createElement('option');
-                        option.value = item.name;
-                        datalist.appendChild(option);
-                    });
                 })
                 .catch(error => {
                     console.error('Error fetching data from GiantBomb:', error);
                 });
         }
-
-        function fetchMediaData() {
-            const title = document.getElementById('title').value;
-            const mediaType = document.getElementById('media_type').value;
-            
-            if (mediaType === 'game') {
-                fetchGiantBombData(title);
-            } else {
-                fetchOMDBData(title);
-            }
+    
+        function fetchGiantBombData(title) {
+            fetch(`/api/fetch_giantbomb_data/?query=${encodeURIComponent(title)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.response = True) {
+                        const game = data.results[0];
+                        document.getElementById('genre').value = game.genres.map(genre => genre.name).join(', ') || '';
+                        document.getElementById('description').value = game.deck || '';
+                        document.getElementById('image_url').value = game.image.original_url || '';
+                    } else {
+                        console.error('Game not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching data from your server:', error);
+                });
         }
-
+    
         function fetchOMDBData(title) {
             const omdbApiKey = '{{ omdb_api_key }}';
-            
-            fetch(`https://www.omdbapi.com/?t=${title}&apikey=${omdbApiKey}`)
+    
+            fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${omdbApiKey}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.Response === "True") {
@@ -182,29 +169,16 @@
                     console.error('Error fetching data from OMDB:', error);
                 });
         }
-
-        function fetchGiantBombData(title) {
-            const giantbombApiKey = '{{ giantbomb_api_key }}';
-
-            fetch(`https://www.giantbomb.com/api/search/?query=${title}&resources=game&api_key=${giantbombApiKey}&format=json`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.results.length > 0) {
-                        const game = data.results[0];
-                        document.getElementById('genre').value = game.genres.map(genre => genre.name).join(', ') || '';
-                        document.getElementById('description').value = game.deck || '';
-                        document.getElementById('image_url').value = game.image.original_url || '';
-                    } else {
-                        console.error('Game not found');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching data from GiantBomb:', error);
-                });
-        }
-
-        // Attach an event listener to trigger `fetchMediaData` when a title is selected
-        document.getElementById('title').addEventListener('change', fetchMediaData);
+    
+        // Attach event listeners
+        document.getElementById('title').addEventListener('input', () => {
+            fetchMediaSuggestions();
+        });
+    
+        document.getElementById('media_type').addEventListener('change', () => {
+            fetchMediaSuggestions(); // Re-fetch suggestions when media type changes
+        });
     </script>
+    
 </div>
 {% endblock %}
