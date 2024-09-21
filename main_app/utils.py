@@ -1,10 +1,11 @@
 import requests
+import logging
 from decouple import config
 
-GIANTBOMB_API_URL = 'https://www.giantbomb.com/api/'
-GIANTBOMB_API_KEY = config('GIANTBOMB_API_KEY')
+RAWG_API_KEY = config('RAWG_API_KEY')
+API_KEY = config('OMDB_API_KEY')
+RAWG_API_URL = 'https://api.rawg.io/api/games'
 OMDB_API_URL = 'http://www.omdbapi.com/'
-API_KEY = config('OMDB_API_KEY')  # Get the API key from environment variables
 
 def fetch_omdb_data(title):
     """Fetch media data from OMDB by title, works for movies, series (TV shows), etc."""
@@ -40,33 +41,44 @@ def fetch_omdb_data(title):
         return None  # Handle network error or invalid response
 
 
-def fetch_giantbomb_game_data(title):
-    """Fetch game data from GiantBomb API by title."""
+def fetch_rawg_game_data(title):
+    """Fetch game data from RAWG API by title."""
     params = {
-        'api_key': GIANTBOMB_API_KEY,
-        'format': 'json',
-        'query': title,
-        'resources': 'game',
+        'key': RAWG_API_KEY,
+        'page_size': 5,
+        'search': title,
     }
     headers = {
-        'User-Agent': 'MediaHaven Game Fetcher',
+        'User-Agent': 'MediaHaven Game Info Fetcher',
     }
 
-    response = requests.get(GIANTBOMB_API_URL, params=params, headers=headers)
-    
-    if response.status_code == 200:
-        game_data = response.json()
-        if game_data.get('status_code') == 1 and game_data.get('number_of_page_results', 0) > 0:
+    try:
+        response = requests.get(RAWG_API_URL, params=params, headers=headers)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        
+        game_data = response.json()  # Attempt to decode JSON
+
+        # Log the fetched game data for debugging
+        logging.info(f"RAWG API response for '{title}': {game_data}")
+
+        if game_data.get('results'):  # Check if there are results
             game = game_data['results'][0]
             return {
-                'title': game.get('name'),
-                'genre': ', '.join([genre.get('name') for genre in game.get('genres', [])]) or 'Unknown',
-                'description': game.get('deck', 'No description available'),
-                'image_url': game.get('image', {}).get('small_url', ''),  # Safe access to avoid KeyError
+                'title': game.get('name', 'Unknown'),
+                'genre': ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown',
+                'description': game.get('description_raw', game.get('description', 'No description available')),  # Check for description_raw
+                'image_url': game.get('background_image', ''),  # Background image URL
             }
         else:
-            print(f"GiantBomb API error: {game_data.get('error')}")
-            return None  # No results found or error
-    else:
-        print(f"Error fetching data from GiantBomb: {response.status_code} - {response.text}")
-        return None  # Handle network error or invalid response
+            logging.error(f"No results found for query: {title}. API response: {game_data}")
+            return None  # No results found or API error
+            
+    except requests.exceptions.HTTPError as http_err:
+        logging.error(f"HTTP error occurred: {http_err} - URL: {response.url}")
+        return None  # Handle HTTP errors
+    except requests.exceptions.RequestException as req_err:
+        logging.error(f"Request exception occurred: {req_err}")
+        return None  # Handle request errors
+    except ValueError as json_err:
+        logging.error(f"JSON decode error: {json_err}")
+        return None  # Handle JSON decode errors
