@@ -88,44 +88,36 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
         form.instance.user = self.request.user
         media_type = self.kwargs.get('media_type')
         search_title = self.request.POST.get('title')
-        
-        # Initialize game_data and media_data
-        game_data = None
-        media_data = None
 
-        # Fetch game data from IGDB if media_type is 'game'
         if media_type == 'game':
             game_data = fetch_game_data(search_title)
-
-        if game_data and isinstance(game_data, list) and len(game_data) > 0:
-            # Access the first result from the list
-            game = game_data[0]
-            form.instance.title = game.get('name', 'Unknown Title')
-            form.instance.genre = ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown Genre'
-            form.instance.description = game.get('summary', 'No description available')
-            form.instance.image_url = game.get('cover', {}).get('url', '')  # Adjust based on IGDB response structure
+            if game_data and isinstance(game_data, list) and len(game_data) > 0:
+                game = game_data[0]
+                form.instance.title = game.get('name', 'Unknown Title')
+                form.instance.genre = ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown Genre'
+                form.instance.description = game.get('summary', 'No description available')
+                form.instance.image_url = game.get('cover', {}).get('url', '')
+            else:
+                form.add_error('title', 'Game not found.')
+                return self.form_invalid(form)
         else:
-            # Use OMDB API for movies/TV shows
             media_data = fetch_omdb_data(search_title)
-
             if media_data:
-                # Populate form fields with data fetched from OMDB
                 form.instance.title = media_data.get('title')
                 form.instance.genre = media_data.get('genre', '')
                 form.instance.description = media_data.get('description', '')
                 form.instance.image_url = media_data.get('image_url', '')
+            else:
+                form.add_error('title', 'Media not found.')
+                return self.form_invalid(form)
 
-        # Ensure media type is assigned
-        if media_type:
-            form.instance.media_type = media_type
+        form.instance.media_type = media_type
 
-        # Check if title is set before saving
         if not form.instance.title:
             form.add_error('title', 'Unable to fetch media data. Please check the title and try again.')
             return self.form_invalid(form)
 
         return super().form_valid(form)
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -138,11 +130,9 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
         return context
 
     def get_success_url(self):
-        if self.kwargs.get('media_type'):
-            return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
-        return reverse('media_index')
+        return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
     
-# Fetch IGDB data
+# Search Games
 def search_games(request):
     """
     View to search for games via IGDB.
@@ -154,8 +144,7 @@ def search_games(request):
     
     return render(request, 'search_games.html', {'game_data': game_data})
 
-
-# Edit Existing Media
+# Media Update View
 class MediaUpdateView(LoginRequiredMixin, UpdateView):
     model = Media
     form_class = MediaForm
@@ -165,38 +154,31 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.user = self.request.user
         media_type = self.kwargs.get('media_type')
         search_title = self.request.POST.get('title')
-        
-        # Initialize game_data and media_data
-        game_data = None
-        media_data = None
 
-        # Fetch game data from IGDB if media_type is 'game'
         if media_type == 'game':
             game_data = fetch_game_data(search_title)
-
-        if game_data and isinstance(game_data, list) and len(game_data) > 0:
-            # Access the first result from the list
-            game = game_data[0]
-            form.instance.title = game.get('name', 'Unknown Title')
-            form.instance.genre = ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown Genre'
-            form.instance.description = game.get('summary', 'No description available')
-            form.instance.image_url = game.get('cover', {}).get('url', '')  # Adjust based on IGDB response structure
+            if game_data and isinstance(game_data, list) and len(game_data) > 0:
+                game = game_data[0]
+                form.instance.title = game.get('name', 'Unknown Title')
+                form.instance.genre = ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown Genre'
+                form.instance.description = game.get('summary', 'No description available')
+                form.instance.image_url = game.get('cover', {}).get('url', '')
+            else:
+                form.add_error('title', 'Game not found.')
+                return self.form_invalid(form)
         else:
-            # Use OMDB API for movies/TV shows
             media_data = fetch_omdb_data(search_title)
-
             if media_data:
-                # Populate form fields with data fetched from OMDB
                 form.instance.title = media_data.get('title')
                 form.instance.genre = media_data.get('genre', '')
                 form.instance.description = media_data.get('description', '')
                 form.instance.image_url = media_data.get('image_url', '')
+            else:
+                form.add_error('title', 'Media not found.')
+                return self.form_invalid(form)
 
-        # Ensure media type is assigned
-        if media_type:
-            form.instance.media_type = media_type
+        form.instance.media_type = media_type
 
-        # Check if title is set before saving
         if not form.instance.title:
             form.add_error('title', 'Unable to fetch media data. Please check the title and try again.')
             return self.form_invalid(form)
@@ -214,7 +196,6 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        # After updating, redirect to the media detail view
         return reverse('view_media', kwargs={'pk': self.object.pk})
 
 # Delete Media
