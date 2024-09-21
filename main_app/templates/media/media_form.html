@@ -26,7 +26,7 @@
         <!-- Hidden Media Type Field -->
         <input type="hidden" id="media_type" name="media_type" value="{{ media.media_type|default:media_type }}">
 
-        <!-- Title Field with dynamic RAWG fetch using datalist -->
+        <!-- Title Field with dynamic IGDB fetch using datalist -->
         <div class="form-group">
             <label for="title">Title</label>
             <input type="text" id="title" name="title" value="{{ form.initial.title|default_if_none:'' }}" required list="title-suggestions" oninput="fetchMediaSuggestions()">
@@ -102,7 +102,6 @@
 
             function fetchMediaSuggestions() {
                 const titleInput = document.getElementById('title').value;
-                const mediaType = document.getElementById('media_type').value;
                 const datalist = document.getElementById('title-suggestions');
 
                 if (titleInput.length < 3) {
@@ -113,61 +112,10 @@
                 // Debounce to prevent too many API calls
                 clearTimeout(debounceTimeout);
                 debounceTimeout = setTimeout(() => {
-                    if (mediaType === 'game') {
-                        // Fetch from RAWG API for games
-                        fetchRawgSuggestions(titleInput);
-                    } else {
-                        // Fetch from OMDB API for movies/TV shows
-                        fetchOMDBSuggestions(titleInput);
-                    }
+                    // Fetch from OMDB API for movies, TV shows, and games (IMDb)
+                    fetchOMDBSuggestions(titleInput);
                 }, 300); // Delay the fetch by 300ms to reduce API calls
             }
-
-            function fetchRawgSuggestions(title) {
-                const datalist = document.getElementById('title-suggestions');
-            
-                fetch(`/fetch_rawg_data/?query=${encodeURIComponent(title)}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network response was not ok');
-                        return response.json();
-                    })
-                    .then(data => {
-                        datalist.innerHTML = ''; // Clear previous suggestions
-            
-                        if (data.results && data.results.length > 0) {
-                            data.results.forEach(item => {
-                                const option = document.createElement('option');
-                                option.value = item.name; // Use 'name' for the title
-                                datalist.appendChild(option);
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data from RAWG:', error);
-                    });
-            }
-            
-            function fetchRawgData(title) {
-                fetch(`/fetch_rawg_data/?query=${encodeURIComponent(title)}`)
-                    .then(response => {
-                        if (!response.ok) throw new Error('Network response was not ok');
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.results && data.results.length > 0) {
-                            const game = data.results[0];
-                            document.getElementById('genre').value = game.genres.map(genre => genre.name).join(', ') || '';
-                            document.getElementById('description').value = game.description_raw || game.description || 'No description available';
-                            document.getElementById('image_url').value = game.background_image || '';
-                        } else {
-                            console.error('No game found in the response.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching data from your server:', error);
-                    });
-            }
-            
 
             function fetchOMDBSuggestions(title) {
                 const omdbApiKey = '{{ omdb_api_key }}';
@@ -230,15 +178,10 @@
             // Listen for selection of an option from the datalist
             document.getElementById('title').addEventListener('change', () => {
                 const selectedTitle = document.getElementById('title').value;
-                const mediaType = document.getElementById('media_type').value;
-                
-                if (mediaType === 'game') {
-                    fetchRawgData(selectedTitle);
-                } else {
-                    fetchOMDBData(selectedTitle);
-                }
+                fetchOMDBData(selectedTitle);
             });
         </script>
     </div>
+
 </div>
 {% endblock %}

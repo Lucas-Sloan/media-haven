@@ -11,7 +11,7 @@ from django.conf import settings
 from decouple import config
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
-from main_app.utils import fetch_omdb_data, fetch_rawg_game_data
+from main_app.utils import fetch_omdb_data, fetch_game_data
 import requests # type: ignore
 import logging # type: ignore
 
@@ -93,16 +93,94 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
         game_data = None
         media_data = None
 
-        # Fetch game data from RAWG if media_type is 'game'
+        # Fetch game data from IGDB if media_type is 'game'
         if media_type == 'game':
-            game_data = fetch_rawg_game_data(search_title)
+            game_data = fetch_game_data(search_title)
 
-        if game_data:
-    # Populate form fields with data fetched from RAWG
-            form.instance.title = game_data.get('title')
-            form.instance.genre = game_data.get('genre', '')
-            form.instance.description = game_data.get('description_raw') or game_data.get('description', '')
-            form.instance.image_url = game_data.get('image_url', '')
+        if game_data and isinstance(game_data, list) and len(game_data) > 0:
+            # Access the first result from the list
+            game = game_data[0]
+            form.instance.title = game.get('name', 'Unknown Title')
+            form.instance.genre = ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown Genre'
+            form.instance.description = game.get('summary', 'No description available')
+            form.instance.image_url = game.get('cover', {}).get('url', '')  # Adjust based on IGDB response structure
+        else:
+            # Use OMDB API for movies/TV shows
+            media_data = fetch_omdb_data(search_title)
+
+            if media_data:
+                # Populate form fields with data fetched from OMDB
+                form.instance.title = media_data.get('title')
+                form.instance.genre = media_data.get('genre', '')
+                form.instance.description = media_data.get('description', '')
+                form.instance.image_url = media_data.get('image_url', '')
+
+        # Ensure media type is assigned
+        if media_type:
+            form.instance.media_type = media_type
+
+        # Check if title is set before saving
+        if not form.instance.title:
+            form.add_error('title', 'Unable to fetch media data. Please check the title and try again.')
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['omdb_api_key'] = settings.OMDB_API_KEY
+        context['client_id'] = settings.CLIENT_ID
+        context['media_type'] = self.kwargs.get('media_type')
+        context['media_type_choices'] = MEDIA_TYPE_CHOICES
+        if self.kwargs.get('media_type') == 'game':
+            context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
+        return context
+
+    def get_success_url(self):
+        if self.kwargs.get('media_type'):
+            return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
+        return reverse('media_index')
+    
+# Fetch IGDB data
+def search_games(request):
+    """
+    View to search for games via IGDB.
+    """
+    game_data = []
+    if 'query' in request.GET:
+        game_title = request.GET['query']
+        game_data = fetch_game_data(game_title)
+    
+    return render(request, 'search_games.html', {'game_data': game_data})
+
+
+# Edit Existing Media
+class MediaUpdateView(LoginRequiredMixin, UpdateView):
+    model = Media
+    form_class = MediaForm
+    template_name = 'media/media_form.html'
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        media_type = self.kwargs.get('media_type')
+        search_title = self.request.POST.get('title')
+        
+        # Initialize game_data and media_data
+        game_data = None
+        media_data = None
+
+        # Fetch game data from IGDB if media_type is 'game'
+        if media_type == 'game':
+            game_data = fetch_game_data(search_title)
+
+        if game_data and isinstance(game_data, list) and len(game_data) > 0:
+            # Access the first result from the list
+            game = game_data[0]
+            form.instance.title = game.get('name', 'Unknown Title')
+            form.instance.genre = ', '.join(genre['name'] for genre in game.get('genres', [])) or 'Unknown Genre'
+            form.instance.description = game.get('summary', 'No description available')
+            form.instance.image_url = game.get('cover', {}).get('url', '')  # Adjust based on IGDB response structure
         else:
             # Use OMDB API for movies/TV shows
             media_data = fetch_omdb_data(search_title)
@@ -128,91 +206,9 @@ class MediaCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['omdb_api_key'] = settings.OMDB_API_KEY
-        context['rawg_api_key'] = settings.RAWG_API_KEY
-        context['media_type'] = self.kwargs.get('media_type')
+        context['client_id'] = settings.CLIENT_ID
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
-        if self.kwargs.get('media_type') == 'game':
-            context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
-        return context
-
-    def get_success_url(self):
-        if self.kwargs.get('media_type'):
-            return reverse('media_filtered', kwargs={'media_type': self.kwargs.get('media_type')})
-        return reverse('media_index')
-    
-# Fetch RAWG Data
-def fetch_rawg_data(request):
-    query = request.GET.get('query', '')
-    api_key = config('RAWG_API_KEY')  # Retrieve the API key from environment variables
-    url = f'https://api.rawg.io/api/games'
-
-    params = {
-        'key': api_key,
-        'page_size': 5,  # Adjust page size as needed
-        'search': query,
-    }
-
-    try:
-        response = requests.get(url, params=params)
-        response.raise_for_status()  # Raise an exception if the request fails
-        data = response.json()
-
-        if data.get('results'):
-            return JsonResponse(data)
-        else:
-            logging.error(f"RAWG API error: No results found for query '{query}'.")
-            return JsonResponse({'error': 'No results found'}, status=404)
-
-    except requests.exceptions.Timeout:
-        logging.error('Request to RAWG API timed out.')
-        return JsonResponse({'error': 'Request timed out'}, status=504)
-
-    except requests.exceptions.RequestException as e:
-        logging.error(f"RequestException occurred: {str(e)}")
-        return JsonResponse({'error': 'An error occurred while fetching data from RAWG'}, status=500)
-
-
-# Edit Existing Media
-class MediaUpdateView(LoginRequiredMixin, UpdateView):
-    model = Media
-    form_class = MediaForm
-    template_name = 'media/media_form.html'
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        media_type = self.kwargs.get('media_type')
-        
-        # Check if the media type is 'game' and fetch data from GiantBomb
-        if media_type == 'game':
-            search_title = self.request.POST.get('title')
-            game_data = fetch_rawg_game_data(search_title)
-
-            if game_data:
-                # Update the media instance with the fetched GiantBomb data
-                form.instance.title = game_data.get('title')
-                form.instance.genre = game_data.get('genre', '')
-                form.instance.description = game_data.get('description', '')
-                form.instance.image_url = game_data.get('image_url', '')
-        else:
-            # Use OMDB API for movies/TV shows
-            search_title = self.request.POST.get('title')
-            media_data = fetch_omdb_data(search_title)
-
-            if media_data:
-                # Update the media instance with the fetched OMDB data
-                form.instance.title = media_data.get('title')
-                form.instance.genre = media_data.get('genre', '')
-                form.instance.description = media_data.get('description', '')
-                form.instance.image_url = media_data.get('image_url', '')
-
-        return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['omdb_api_key'] = settings.OMDB_API_KEY
-        context['rawg_api_key'] = settings.RAWG_API_KEY
-        context['media_type_choices'] = MEDIA_TYPE_CHOICES
-        context['media_type'] = self.object.media_type  # Ensure media_type is passed
+        context['media_type'] = self.object.media_type
         if self.object.media_type == 'game':
             context['DIFFICULTY_CHOICES'] = DIFFICULTY_CHOICES
         return context
