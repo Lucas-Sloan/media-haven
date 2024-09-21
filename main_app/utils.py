@@ -1,7 +1,7 @@
 import requests
 from decouple import config
 
-GIANTBOMB_API_URL = 'https://www.giantbomb.com/api/search/'
+GIANTBOMB_API_URL = 'https://www.giantbomb.com/api/'
 GIANTBOMB_API_KEY = config('GIANTBOMB_API_KEY')
 OMDB_API_URL = 'http://www.omdbapi.com/'
 API_KEY = config('OMDB_API_KEY')  # Get the API key from environment variables
