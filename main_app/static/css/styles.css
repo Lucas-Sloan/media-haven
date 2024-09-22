@@ -200,6 +200,10 @@ a:hover {
     }
 }
 
+.index-title {
+    text-align: center;
+}
+
 /* Tabs */
 .media-tabs {
     display: flex;
@@ -222,7 +226,7 @@ a:hover {
 }
 
 .media-tabs a.active {
-    background-color: #e53935;
+    background-color: #666666;
 }
 
 /* Table styling */
@@ -325,17 +329,20 @@ button.submit-btn:hover {
     margin: 0 auto;
 }
 
+.media-details-page h1 {
+    text-align: center;
+}
+
 .media-details-container {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     gap: 40px;
     margin-bottom: 40px;
 }
 
 .media-image {
     width: 300px;
-    height: 450px;
     background-color: #333;
     border-radius: 10px;
     display: flex;
@@ -344,8 +351,8 @@ button.submit-btn:hover {
 }
 
 .media-image img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
     border-radius: 10px;
 }
 
