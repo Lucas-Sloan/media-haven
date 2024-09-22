@@ -117,46 +117,91 @@ a:hover {
 .dashboard h1 {
     font-size: 5em;
     text-align: center;
+    margin-top: 10px;
 }
 
 .dashboard h2 {
     font-size: 2em;
-    margin-left: 50px;
+    text-align: center;
 }
+
 /* Media Cards */
 .media-card {
     background-color: #1f1f1f;
     border: 1px solid #333;
     border-radius: 8px;
+    max-width: 300px;
+    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     margin-left: 50px;
     text-align: center;
-    max-width: 250px;
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between; 
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.media-card img {
-    max-width: 250px;
+.media-image {
     width: 100%;
     height: auto;
     border-radius: 5px;
+    margin-bottom: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-.media-card h3 {
+.media-info {
+    margin-top: auto; 
+    background-color: #2c2c2c;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: left;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
+    width: 90%
+}
+
+.media-info h3 {
+    margin-bottom: 10px;
     font-size: 1.2em;
-    margin: 10px 0;
+    color: #e0e0e0;
 }
 
-.media-card p {
+.media-info p {
     font-size: 0.9em;
     color: #b0b0b0;
+    margin-bottom: 5px;
 }
 
 /* Grid Layout for Media Cards */
 .media-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
+}
+
+/* Media query to adjust layout for smaller screens */
+@media (max-width: 1280px) {
+    .media-grid {
+        grid-template-columns: repeat(2, 1fr); 
+        gap: 0px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .media-card {
+        margin-left: 20px;
+    }
+}
+
+@media (max-width: 1280px) {
+    .dashboard h2 {
+        font-size: 2em;
+        margin-left: 20px;
+    }
+}
+
+.index-title {
+    text-align: center;
 }
 
 /* Tabs */
@@ -181,7 +226,7 @@ a:hover {
 }
 
 .media-tabs a.active {
-    background-color: #e53935;
+    background-color: #666666;
 }
 
 /* Table styling */
@@ -284,17 +329,20 @@ button.submit-btn:hover {
     margin: 0 auto;
 }
 
+.media-details-page h1 {
+    text-align: center;
+}
+
 .media-details-container {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: stretch;
     gap: 40px;
     margin-bottom: 40px;
 }
 
 .media-image {
     width: 300px;
-    height: 450px;
     background-color: #333;
     border-radius: 10px;
     display: flex;
@@ -303,8 +351,8 @@ button.submit-btn:hover {
 }
 
 .media-image img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
     border-radius: 10px;
 }
 
