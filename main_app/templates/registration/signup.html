@@ -1,12 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <h2>Sign Up</h2>
-  <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Sign Up</button>
-  </form>
-  <p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+  <div class="auth-form-page">
+    <h2 class="auth-form-title" id="signup">Sign Up</h2>
+    <form method="POST" class="auth-form">
+      {% csrf_token %}
+      <div class="form-fields">
+        {{ form.as_p }}
+      </div>
+      <div class="form-group">
+        <button type="submit" class="submit-btn">Sign Up</button>
+      </div>
+    </form>
+    <p class="auth-form-link">
+      Already have an account? <a href="{% url 'login' %}">Log in</a>
+    </p>
+  </div>
 {% endblock %}
-
