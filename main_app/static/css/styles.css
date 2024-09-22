@@ -298,6 +298,12 @@ button.submit-btn:hover {
 .media-form-page {
     padding: 40px;
     max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: left;
 }
 
 .media-form-page h1 {
@@ -306,6 +312,8 @@ button.submit-btn:hover {
 }
 
 .media-form-page form {
+    width: 100%;
+    max-width: 600px;
     background-color: #1f1f1f;
     padding: 20px;
     border-radius: 10px;
@@ -320,6 +328,15 @@ button.submit-btn:hover {
     display: block;
     margin-bottom: 5px;
     font-size: 18px;
+}
+
+.favorite-checkbox {
+    display: flex;
+    align-items: left;
+}
+
+.favorite-checkbox input[type="checkbox"] {
+    margin-right: 100px;
 }
 
 /* Media Details Page */
@@ -476,20 +493,71 @@ button.delete-btn:hover, button.cancel-btn:hover {
 }
 
 /* Confirmation Page Styling */
-.confirm-delete-page {
-    background-color: #1f1f1f; /* Dark background */
-    color: #e0e0e0; /* Light text */
-    padding: 20px;
-    border-radius: 8px;
+.delete-media-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: auto;
     max-width: 600px;
-    margin: 0 auto;
+    margin: 300px auto;
+    background-color: #1f1f1f;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.4);
     text-align: center;
 }
 
-.confirm-delete-page h1 {
-    font-size: 2em;
-    margin-bottom: 20px;
-    color: #ffffff;
+/* Heading styles */
+.delete-media-form h1 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    color: #fff;
+}
+
+/* Button container styles */
+.delete-media-form .form-actions {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Uniform button styles */
+.delete-media-form .form-actions button, 
+.delete-media-form .form-actions a {
+    background-color: #e74c3c; /* Default color for both buttons */
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block; 
+    transition: background-color 0.3s ease;
+    font-size: 16px;
+    cursor: pointer;
+    min-width: 150px;
+    height: 40px;
+    text-align: center;
+    /* line-height: 40px; */
+}
+
+/* Delete button */
+.delete-media-form .form-actions .delete-btn {
+    background-color: #e74c3c;
+}
+
+.delete-media-form .form-actions .delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Cancel button */
+.delete-media-form .form-actions .cancel-btn {
+    background-color: #888;
+}
+
+.delete-media-form .form-actions .cancel-btn:hover {
+    background-color: #555;
 }
 
 .review-info, .media-info {

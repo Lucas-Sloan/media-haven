@@ -79,7 +79,7 @@
         <input type="hidden" id="image_url" name="image_url" value="{{ form.initial.image_url|default_if_none:'' }}">
 
         <!-- Favorite Checkbox -->
-        <div class="form-group">
+        <div class="form-group favorite-checkbox">
             <label for="is_favorite">Favorite?</label>
             <input type="checkbox" id="is_favorite" name="is_favorite" {% if media.is_favorite %}checked{% endif %}>
         </div>

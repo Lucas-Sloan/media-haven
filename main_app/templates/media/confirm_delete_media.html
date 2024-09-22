@@ -3,10 +3,14 @@
 {% block title %}Delete Media{% endblock %}
 
 {% block content %}
-    <h1>Are you sure you want to delete "{{ media.title }}"?</h1>
-    <form method="POST" action="{% url 'delete_media' media.id %}">
-        {% csrf_token %}
-        <button type="submit">Yes, Delete</button>
-        <a href="{% url 'view_media' media.id %}">Cancel</a>
-    </form>
-{% endblock %} 
+    <div class="delete-media-form">
+        <h1>Are you sure you want to delete "{{ media.title }}"?</h1>
+        <form method="POST" action="{% url 'delete_media' media.id %}">
+            {% csrf_token %}
+            <div class="form-actions">
+                <button type="submit" class="delete-btn">Yes, Delete</button>
+                <a href="{% url 'view_media' media.id %}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
