@@ -150,11 +150,21 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
     form_class = MediaForm
     template_name = 'media/media_form.html'
 
-    def form_valid(self, form):
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        media_type = self.kwargs.get('media_type', self.object.media_type)
+        form = self.get_form()
+
+        if form.is_valid():
+            return self.form_valid(form, media_type)
+        else:
+            return self.form_invalid(form)
+
+    def form_valid(self, form, media_type):
         form.instance.user = self.request.user
-        media_type = self.kwargs.get('media_type')
         search_title = self.request.POST.get('title')
 
+        # Fetch data based on media type
         if media_type == 'game':
             game_data = fetch_game_data(search_title)
             if game_data and isinstance(game_data, list) and len(game_data) > 0:
@@ -187,6 +197,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['media'] = self.object
         context['omdb_api_key'] = settings.OMDB_API_KEY
         context['client_id'] = settings.CLIENT_ID
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
@@ -197,6 +208,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('view_media', kwargs={'pk': self.object.pk})
+
 
 # Delete Media
 class MediaDeleteView(DeleteView):
