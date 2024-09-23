@@ -10,7 +10,7 @@
 
   ### [CLICK TO DEMO](https://mediahaven-66f408da818e.herokuapp.com/)
 
-  ##### Kuziva Nemaire
+  ##### Kuziva Nemaire | Lucas Sloan | Andre Chao
 
   [![LinkedIn Badge](https://img.shields.io/badge/-@kuzivanemaire-blue?style=flat&logo=Linkedin&logoColor=black)](https://www.linkedin.com/in/kuziva-nemaire-4b03a3191/)
    [![LinkedIn Badge](https://img.shields.io/badge/-@lucassloan-blue?style=flat&logo=Linkedin&logoColor=black)](https://www.linkedin.com/in/lucas-sloan-892802211/)
@@ -114,3 +114,12 @@ media-haven
    ├─ settings.py
    ├─ urls.py
    └─ wsgi.py
+
+
+
+
+
+
+## :star: CREDITS
+
+credit to OMDB and IGDB API's
