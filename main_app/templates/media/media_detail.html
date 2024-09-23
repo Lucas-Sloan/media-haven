@@ -76,6 +76,11 @@
                     <button type="button" class="submit-btn">Add Review</button>
                 </a>
             </div>
+            <div class="edit-media">
+                <a href="{% url 'edit_media' media.id %}">
+                    <button type="button" class="submit-btn">Edit Media</button>
+                </a>
+            </div>
             <div>
                 <form action="{% url 'confirm_delete_media' media.id %}">
                     {% csrf_token %}

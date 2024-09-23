@@ -24,7 +24,7 @@
                             {% elif media.media_type == 'game' %}Video Game
                             {% endif %}
                         </p>
-                        <p>Rating: {{ media.rating }}/5</p>
+                        <p>Rating: {{ media.rating }} / 5</p>
                         <p>Status: {{ media.get_status_display }}</p>
                         <p>Genre: {{ media.genre|default:"No genre available" }}</p>
                         <p>Favorite:
