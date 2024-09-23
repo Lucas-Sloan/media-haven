@@ -32,7 +32,11 @@
                         {{ media.description }}
                         <a href="javascript:void(0);" onclick="showShortDescription()">Show less</a>
                     </span>
-                </p>
+                {% if media.media_type == 'game' and media.difficulty %}
+                    <p><strong>Difficulty:</strong> {{ media.get_difficulty_display }}</p>
+                {% else %}
+                    <p><strong>Difficulty:</strong> Not set</p>
+                {% endif %}
                 <p><strong>Rating:</strong> {{ media.rating }} / 5</p>
                 <p><strong>Status:</strong> {{ media.get_status_display }}</p>
                 <p><strong>Genre:</strong> {{ media.genre }}</p>
