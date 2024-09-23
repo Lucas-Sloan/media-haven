@@ -19,7 +19,20 @@
                     {% elif media.media_type == 'game' %}Video Game
                     {% endif %}
                 </p>
-                <p><strong>Description:</strong> {{ media.description }}</p>
+                <p><strong>Description:</strong>
+                    <span id="description-short">
+                        {% if media.description|length > 500 %}
+                            {{ media.description|slice:":500" }}...
+                            <a href="javascript:void(0);" onclick="showFullDescription()">Read more</a>
+                        {% else %}
+                            {{ media.description }}
+                        {% endif %}
+                    </span>
+                    <span id="description-full" style="display: none;">
+                        {{ media.description }}
+                        <a href="javascript:void(0);" onclick="showShortDescription()">Show less</a>
+                    </span>
+                </p>
                 <p><strong>Rating:</strong> {{ media.rating }} / 5</p>
                 <p><strong>Status:</strong> {{ media.get_status_display }}</p>
                 <p><strong>Genre:</strong> {{ media.genre }}</p>
@@ -71,4 +84,16 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function showFullDescription() {
+            document.getElementById('description-short').style.display = 'none';
+            document.getElementById('description-full').style.display = 'inline';
+        }
+
+        function showShortDescription() {
+            document.getElementById('description-short').style.display = 'inline';
+            document.getElementById('description-full').style.display = 'none';
+        }
+    </script>
 {% endblock %}

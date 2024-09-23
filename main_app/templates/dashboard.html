@@ -27,6 +27,13 @@
                         <p>Rating: {{ media.rating }}/5</p>
                         <p>Status: {{ media.get_status_display }}</p>
                         <p>Genre: {{ media.genre|default:"No genre available" }}</p>
+                        <p>Favorite:
+                            {% if media.is_favorite %}
+                                <span>&#x2764;</span> <!-- Filled heart for favorite -->
+                            {% else %}
+                                <span>&#x2661;</span> <!-- Empty heart for non-favorite -->
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
                 {% empty %}
@@ -55,7 +62,14 @@
                         </p>
                         <p>Rating: {{ media.rating }}/5</p>
                         <p>Status: {{ media.get_status_display }}</p>
-                        <p>Genre: {{ media.genre|default:"No genre available" }}</p>
+                        <p>Genre: {{ media.genre|default:"No genre available" }}</p>         
+                        <p>Favorite:
+                            {% if media.is_favorite %}
+                                <span>&#x2764;</span> <!-- Filled heart for favorite -->
+                            {% else %}
+                                <span>&#x2661;</span> <!-- Empty heart for non-favorite -->
+                            {% endif %}
+                        </p>
                     </div>
                 </div>
                 {% empty %}

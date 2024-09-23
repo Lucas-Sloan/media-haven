@@ -37,7 +37,7 @@ class MediaListView(ListView):
     context_object_name = 'media_list'
 
     def get_queryset(self):
-        return Media.objects.filter(user=self.request.user)
+        return Media.objects.filter(user=self.request.user).order_by('title')
 
 # Media Filtered by Type (Movies, TV Shows, Anime, Video Games)
 class MediaFilteredListView(ListView):
@@ -46,7 +46,10 @@ class MediaFilteredListView(ListView):
     context_object_name = 'media_list'
 
     def get_queryset(self):
-        return Media.objects.filter(media_type=self.kwargs['media_type'], user=self.request.user)
+        return Media.objects.filter(
+            media_type=self.kwargs['media_type'], 
+            user=self.request.user
+        ).order_by('title')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,7 +73,7 @@ class MediaFilteredStatusView(ListView):
             media_type=self.kwargs['media_type'],
             status=self.kwargs['status'],
             user=self.request.user
-        )
+        ).order_by('title')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
