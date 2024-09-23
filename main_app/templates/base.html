@@ -7,12 +7,16 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   </head>
   <body>
-    <div class="sidebar">
+    <div class="mobile-menu-icon" onclick="toggleSidebar()">
+      <span>&#9776;</span>
+    </div>
+
+    <div class="sidebar" id="sidebar">
       <!-- Title logo with adjusted class for styling -->
       {% if user.is_authenticated %}
       <a href="{% url 'dashboard' %}">
         <img
-          src="{% static 'images/media_haven_title.png' %}"
+          src="{% static 'images/media_haven_logo.png' %}"
           alt="Media Haven Title Logo"
           class="navbar-title-logo"
         />
@@ -95,4 +99,10 @@
       {% endblock %}
     </div>
   </body>
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('active');
+    }
+  </script>
 </html>
