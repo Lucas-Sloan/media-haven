@@ -55,13 +55,13 @@
         <!-- Difficulty Field -->
         <div class="form-group">
             <label for="difficulty">Difficulty (optional)</label>
-            <select id="difficulty" name="difficulty">
+            <select id="difficulty" name="difficulty" class="form-control">
                 <option value="" disabled selected>Select Difficulty</option>
-                {% for choice in DIFFICULTY_CHOICES %}
-                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                {% endfor %}
-            </select>
-        </div>
+                {% for value, label in DIFFICULTY_CHOICES %}
+            <option value="{{ value }}"{% if value == media.difficulty %} selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+    </select>
+</div>
         {% endif %}
 
         <!-- Hidden Fields -->

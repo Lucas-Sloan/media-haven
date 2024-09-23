@@ -12,8 +12,7 @@ from decouple import config
 from .models import Media, Review, MEDIA_TYPE_CHOICES, DIFFICULTY_CHOICES
 from .forms import MediaForm, ReviewForm
 from main_app.utils import fetch_omdb_data, fetch_game_data
-import requests # type: ignore
-import logging # type: ignore
+from django.apps import apps
 
 # Landing page view
 class Home(LoginView):
@@ -165,6 +164,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form, media_type):
         form.instance.user = self.request.user
+        # form.instance.difficulty = form.cleaned_data.get('difficulty')
         search_title = self.request.POST.get('title')
 
         # Fetch data based on media type
@@ -193,7 +193,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
         form.instance.media_type = media_type
 
         if not form.instance.title:
-            form.add_error('title', 'Unable to fetch media data. Please check the title and try again.')
+            form.add_error('title', 'Unable to fetch data. Please check the title and try again.')
             return self.form_invalid(form)
 
         return super().form_valid(form)
@@ -201,6 +201,7 @@ class MediaUpdateView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['media'] = self.object
+        context['media_difficulty'] = self.object.get_difficulty_display() 
         context['omdb_api_key'] = settings.OMDB_API_KEY
         context['client_id'] = settings.CLIENT_ID
         context['media_type_choices'] = MEDIA_TYPE_CHOICES
@@ -230,10 +231,15 @@ class MediaDetailView(DetailView):
     template_name = 'media/media_detail.html'
     context_object_name = 'media'
 
+    def get_object(self, queryset=None):
+        # Get the object based on the primary key
+        return super().get_object(queryset=queryset)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['reviews'] = Review.objects.filter(media=self.object)
         return context
+
 
 # List Favorites
 class FavoritesListView(ListView):

@@ -4,7 +4,7 @@ from .models import Media, Review, REVIEW_RATING
 class MediaForm(forms.ModelForm):
     class Meta:
         model = Media
-        fields = ['title', 'media_type', 'rating', 'status', 'genre', 'description', 'is_favorite', 'notes']
+        fields = ['title', 'media_type', 'rating', 'status', 'genre', 'description', 'is_favorite', 'notes', 'difficulty', 'image_url']
 
 class ReviewForm(forms.ModelForm):
     class Meta:
