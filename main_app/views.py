@@ -26,7 +26,7 @@ class DashboardView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        context['recently_added'] = Media.objects.filter(user=user).order_by('-created_at')[:10]
+        context['recently_added'] = Media.objects.filter(user=user).order_by('-created_at')[:12]
         context['favorites'] = Media.objects.filter(user=user, is_favorite=True)
         return context
 
