@@ -1,6 +1,6 @@
 <div id="header" align="center">
 
-  <img src="main_app/static/images/media_haven_title_black.png" width="800" height="400">
+  <img src="main_app/static/images/media_haven_logo.png" width="800" height="400">
 
 </div>
 
@@ -26,7 +26,7 @@
 
 ## :camera_flash: Screenshot
 
-<img src="https://your-screenshot-link.com" alt="Screenshot of Media Haven" width="800" height="400"/>
+<img src="https://i.imgur.com/tTTw76E.png" alt="Screenshot of Media Haven" width="800" height="400"/>
 
 ## :computer: Technologies Used
 
