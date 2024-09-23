@@ -1,6 +1,6 @@
 <div id="header" align="center">
 
-  <img src="main_app/static/images/media_haven_logo.png" width="800" height="400">
+  <img src="main_app/static/images/media_haven_logo_black.png" width="800" height="400">
 
 </div>
 
