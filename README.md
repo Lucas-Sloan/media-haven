@@ -64,16 +64,3 @@
 - [ ] Add community page to find other user's indexes and follow.
 
 </div>
-
-<div id="filetree" align="center">
-
-## :file_folder: File Structure
-
-<details>
-  <summary>File Tree</summary>
-
-  <img src="main_app/static/images/screenshots/filetree.png" width="600" height="1000">
-
-</details>
-
-</div>
