@@ -1,10 +1,10 @@
-# Media Haven
-
 <div id="header" align="center">
   <img src="main_app/static/images/media_haven_github_logo.png" width="800" height="400">
 </div>
 
 <div id="description" align="center">
+
+  # Media Haven
 
   ### [CLICK TO DEMO](https://mediahaven-66f408da818e.herokuapp.com/)
 
@@ -71,63 +71,63 @@
 
 <details>
   <summary>File Tree</summary>
-```
-media-haven
-├─ .gitignore
-├─ Pipfile
-├─ Procfile
-├─ README.md
-├─ main_app
-│  ├─ __init__.py
-│  ├─ admin.py
-│  ├─ apps.py
-│  ├─ forms.py
-│  ├─ migrations
-│  │  ├─ 0001_initial.py
-│  │  └─ __init__.py
-│  ├─ models.py
-│  ├─ static
-│  │  ├─ css
-│  │  │  └─ styles.css
-│  │  └─ images
-│  ├─ templates
-│  │  ├─ about.html
-│  │  ├─ base.html
-│  │  ├─ dashboard.html
-│  │  ├─ home.html
-│  │  ├─ media
-│  │  │  ├─ confirm_delete_media.html
-│  │  │  ├─ media_detail.html
-│  │  │  ├─ media_form.html
-│  │  │  └─ media_index.html
-│  │  ├─ registration
-│  │  │  ├─ logged_out.html
-│  │  │  ├─ login.html
-│  │  │  └─ signup.html
-│  │  └─ review
-│  │     ├─ confirm_delete_review.html
-│  │     └─ review_form.html
-│  ├─ tests.py
-│  ├─ urls.py
-│  ├─ utils.py
-│  └─ views.py
-├─ manage.py
-├─ mediahaven
-│  ├─ __init__.py
-│  ├─ asgi.py
-│  ├─ settings.py
-│  ├─ urls.py
-│  └─ wsgi.py
-├─ requirements.txt
-└─ staticfiles
-   ├─ admin
-   │  ├─ css
-   │  ├─ img
-   │  └─ js
-   ├─ css
-   │  └─ styles.css
-   └─ images
-```
-</details>
 
+  ```
+  media-haven
+  ├─ .gitignore
+  ├─ Pipfile
+  ├─ Procfile
+  ├─ README.md
+  ├─ main_app
+  │  ├─ __init__.py
+  │  ├─ admin.py
+  │  ├─ apps.py
+  │  ├─ forms.py
+  │  ├─ migrations
+  │  │  ├─ 0001_initial.py
+  │  │  └─ __init__.py
+  │  ├─ models.py
+  │  ├─ static
+  │  │  ├─ css
+  │  │  │  └─ styles.css
+  │  │  └─ images
+  │  ├─ templates
+  │  │  ├─ about.html
+  │  │  ├─ base.html
+  │  │  ├─ dashboard.html
+  │  │  ├─ home.html
+  │  │  ├─ media
+  │  │  │  ├─ confirm_delete_media.html
+  │  │  │  ├─ media_detail.html
+  │  │  │  ├─ media_form.html
+  │  │  │  └─ media_index.html
+  │  │  ├─ registration
+  │  │  │  ├─ logged_out.html
+  │  │  │  ├─ login.html
+  │  │  │  └─ signup.html
+  │  │  └─ review
+  │  │     ├─ confirm_delete_review.html
+  │  │     └─ review_form.html
+  │  ├─ tests.py
+  │  ├─ urls.py
+  │  ├─ utils.py
+  │  └─ views.py
+  ├─ manage.py
+  ├─ mediahaven
+  │  ├─ __init__.py
+  │  ├─ asgi.py
+  │  ├─ settings.py
+  │  ├─ urls.py
+  │  └─ wsgi.py
+  ├─ requirements.txt
+  └─ staticfiles
+     ├─ admin
+     │  ├─ css
+     │  ├─ img
+     │  └─ js
+     ├─ css
+     │  └─ styles.css
+     └─ images
+  ```
+</details>
 </div>
