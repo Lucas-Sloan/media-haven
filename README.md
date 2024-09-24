@@ -72,7 +72,7 @@
 <details>
   <summary>File Tree</summary>
 
-  <img src="main_app/static/images/screenshots/filetree.png" width="400" height="800">
+  <img src="main_app/static/images/screenshots/filetree.png" width="600" height="1000">
 
 </details>
 
