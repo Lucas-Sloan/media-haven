@@ -62,7 +62,7 @@
 
 
 
-
+```plaintext
 media-haven
 ├─ .gitignore
 ├─ Pipfile
@@ -114,7 +114,7 @@ media-haven
    ├─ settings.py
    ├─ urls.py
    └─ wsgi.py
-
+```
 
 
 
