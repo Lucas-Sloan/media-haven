@@ -33,14 +33,14 @@
 
   | Description               | Screenshot                                               |
   |:-------------------------:|----------------------------------------------------------|
-  | **Landing Page**          | ![Landing Page](images/screenshots/landing_page.png)      |
-  | **Dashboard**             | ![Dashboard](images/screenshots/dashboard.png)            |
-  | **Details Page**          | ![Details](images/screenshots/details.png)                |
-  | **Index Page**            | ![Index](images/screenshots/index.png)                    |
-  | **Mobile Navbar Popout**  | ![Mobile Navbar Popout](images/screenshots/navbar_popout.png) |
-  | **Mobile Dashboard**      | ![Mobile Dashboard](images/screenshots/mobile_dashboard.png) |
-  | **Mobile Details**        | ![Mobile Details](images/screenshots/mobile_details.png)  |
-  | **Mobile Index**          | ![Mobile Index](images/screenshots/mobile_index.png)      |
+  | **Landing Page**          | ![Landing Page](main_app/static/images/screenshots/landing_page.png)      |
+  | **Dashboard**             | ![Dashboard](main_app/static/images/screenshots/dashboard.png)            |
+  | **Details Page**          | ![Details](main_app/static/images/screenshots/details.png)                |
+  | **Index Page**            | ![Index](main_app/static/images/screenshots/index.png)                    |
+  | **Mobile Navbar Popout**  | ![Mobile Navbar Popout](main_app/static/images/screenshots/navbar_popout.png) |
+  | **Mobile Dashboard**      | ![Mobile Dashboard](main_app/static/images/screenshots/mobile_dashboard.png) |
+  | **Mobile Details**        | ![Mobile Details](main_app/static/images/screenshots/mobile_details.png)  |
+  | **Mobile Index**          | ![Mobile Index](main_app/static/images/screenshots/mobile_index.png)      |
 
 </div>
 
@@ -71,3 +71,63 @@
 
 <details>
   <summary>File Tree</summary>
+```
+media-haven
+├─ .gitignore
+├─ Pipfile
+├─ Procfile
+├─ README.md
+├─ main_app
+│  ├─ __init__.py
+│  ├─ admin.py
+│  ├─ apps.py
+│  ├─ forms.py
+│  ├─ migrations
+│  │  ├─ 0001_initial.py
+│  │  └─ __init__.py
+│  ├─ models.py
+│  ├─ static
+│  │  ├─ css
+│  │  │  └─ styles.css
+│  │  └─ images
+│  ├─ templates
+│  │  ├─ about.html
+│  │  ├─ base.html
+│  │  ├─ dashboard.html
+│  │  ├─ home.html
+│  │  ├─ media
+│  │  │  ├─ confirm_delete_media.html
+│  │  │  ├─ media_detail.html
+│  │  │  ├─ media_form.html
+│  │  │  └─ media_index.html
+│  │  ├─ registration
+│  │  │  ├─ logged_out.html
+│  │  │  ├─ login.html
+│  │  │  └─ signup.html
+│  │  └─ review
+│  │     ├─ confirm_delete_review.html
+│  │     └─ review_form.html
+│  ├─ tests.py
+│  ├─ urls.py
+│  ├─ utils.py
+│  └─ views.py
+├─ manage.py
+├─ mediahaven
+│  ├─ __init__.py
+│  ├─ asgi.py
+│  ├─ settings.py
+│  ├─ urls.py
+│  └─ wsgi.py
+├─ requirements.txt
+└─ staticfiles
+   ├─ admin
+   │  ├─ css
+   │  ├─ img
+   │  └─ js
+   ├─ css
+   │  └─ styles.css
+   └─ images
+```
+</details>
+
+</div>
