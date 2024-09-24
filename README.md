@@ -25,6 +25,11 @@
   - The goal was to create a platform that centralizes all forms of entertainment—movies, TV shows, anime, and video games—allowing users to manage and review their media from one place.
   - The project integrates with OMDB and IGDB APIs to fetch detailed information for users' favorite media, providing a seamless experience.
 
+<details open>
+  <summary> Planning </summary>
+  <a href="https://trello.com/b/P1GoQ4cb/media-haven">https://trello.com/b/P1GoQ4cb/media-haven</a>
+</details>
+
 </div>
 
 <div id="screenshots" align="center">
